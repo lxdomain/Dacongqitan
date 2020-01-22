@@ -41,7 +41,7 @@ public class PanelController : MonoBehaviour
         playerContainer = GameObject.Find("Canvas/Background/RightCenterPanel/PlayerContainer");
     }
 
-    void Start()
+    private void Start()
     {
         foreach(Button btn in barBtnList)
         {

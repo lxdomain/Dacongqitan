@@ -784,6 +784,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cadf0278d31c6248a35f33ed15a752d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  figure: {fileID: 0}
+  tempSprite: {fileID: 0}
 --- !u!1001 &5686070523630897048
 PrefabInstance:
   m_ObjectHideFlags: 0

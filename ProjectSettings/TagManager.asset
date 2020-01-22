@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SubItem
   - ParentItem
+  - Configuration
   layers:
   - Default
   - TransparentFX
