@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PanelController : MonoBehaviour
+public class PanelToggle : MonoBehaviour
 {
     [SerializeField]
     private List<Button> barBtnList;
