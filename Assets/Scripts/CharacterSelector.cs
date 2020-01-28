@@ -14,11 +14,15 @@ public class CharacterSelector : MonoBehaviour
     [SerializeField]
     private List<GameObject> modeSetList;
     [SerializeField]
+    private List<GameObject> playermsgList;
+    [SerializeField]
     private List<GameObject> preSetList;
     private GameObject characterPanel;
     private Button backBtn;
     private readonly string abs_path = "Canvas/Background/RightCenterPanel/PlayerContainer";
     private readonly string[] rel_paths = { "/Player_01", "/Player_02", "/Player_03", "/Player_04" };
+
+  
 
     private void Awake()
     {
@@ -47,16 +51,19 @@ public class CharacterSelector : MonoBehaviour
         //    }
         //}
         getGameObjectsByAbsPath(modeSetList, "/ModeSet");
+        getGameObjectsByAbsPath(playermsgList, "/Content");
         getGameObjectsByAbsPath(preSetList, "/PreSet");
         //for(int i = 0; i < rel_paths.Length; i++)
         //{
         //    GameObject modeSet = GameObject.Find(abs_path + rel_paths[i] + "/ModeSet");
         //    modeSetList.Add(modeSet);
         //}
+        Utilities.initResMap();
     }
 
     private void Start()
     {
+
         // Binding events for a group of mode set buttons.
         for (int i = 0; i < modeSetList.Count(); i++)
         {
@@ -112,8 +119,31 @@ public class CharacterSelector : MonoBehaviour
                 }
             }
             backBtn.gameObject.SetActive(false);
+            if (Utilities.entranceIsModified)
+            {
+                updateEntrance();
+                Utilities.entranceIsModified = false;
+            }
+            
         });
     }
+
+
+    private void updateEntrance()
+    {
+
+        playermsgList[Utilities.entranceID].GetComponentInChildren<Text>().text = Utilities.entranceName;
+        Button targetBtn = playermsgList[Utilities.entranceID].GetComponentInChildren<Button>(); 
+        targetBtn.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[Utilities.entranceName], typeof(Sprite)) as Sprite;
+
+        SpriteState sp = new SpriteState();
+        Sprite tmpSprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[Utilities.entranceName]+"_hover", typeof(Sprite)) as Sprite;
+        sp.highlightedSprite = tmpSprite;
+        sp.pressedSprite = tmpSprite;
+        targetBtn.spriteState = sp;
+    }
+
+
 
     private void getBtnsByAbsPath(List<Button> tar,string rel_path)
     {
@@ -127,7 +157,7 @@ public class CharacterSelector : MonoBehaviour
         }
     }
 
-    private void getGameObjectsByAbsPath(List<GameObject> tar,string rel_path)
+    private void getGameObjectsByAbsPath(List<GameObject> tar,string rel_path="")
     {
         for (int i = 0; i < rel_paths.Length; i++)
         {
