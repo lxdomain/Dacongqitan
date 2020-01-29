@@ -14,6 +14,7 @@ public class Utilities
     /************************************************THE END********************************************************************/
     public static Dictionary<string, string> resMap;
     public static string res_folder_path_figure = "Images/Figures/";
+    public static string res_folder_path_mask = "Images/Masks/";
     public static void initResMap()
     {
         resMap = new Dictionary<string, string>();

@@ -31,8 +31,8 @@ public class CharacterSelector : MonoBehaviour
         activePanelList = new List<GameObject>();
         modeSetList = new List<GameObject>();
         preSetList = new List<GameObject>();
-        GameObject[] panelGroup = GameObject.FindGameObjectsWithTag("Configuration");
-        foreach (GameObject obj in panelGroup)
+        GameObject[] panelArr = GameObject.FindGameObjectsWithTag("Configuration");
+        foreach (GameObject obj in panelArr)
         {
             activePanelList.Add(obj);
         }
@@ -109,7 +109,8 @@ public class CharacterSelector : MonoBehaviour
         // Binding event for the back button.
         backBtn.onClick.AddListener(() =>
         {
-            activePanelList[0].transform.Find("Text").GetComponentInChildren<Text>().text = "赛局设置>>>";
+            activePanelList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask + "sjsz", typeof(Sprite)) as Sprite;
+            //activePanelList[0].transform.Find("Text").GetComponentInChildren<Text>().text = "赛局设置>>>";
             foreach (GameObject panel in activePanelList)
             {
                 //  avoid the top mask hidden incorrectly.
@@ -176,7 +177,8 @@ public class CharacterSelector : MonoBehaviour
 
     private void ActiveCharacterPanel(Button btn)
     {
-        activePanelList[0].transform.Find("Text").GetComponentInChildren<Text>().text = "更换角色>>>";
+        activePanelList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask+"ghjs", typeof(Sprite)) as Sprite;
+        //activePanelList[0].transform.Find("Text").GetComponentInChildren<Text>().text = "更换角色>>>";
         activePanelList[activePanelList.Count()-1].SetActive(true);
         backBtn.gameObject.SetActive(true);
     }
