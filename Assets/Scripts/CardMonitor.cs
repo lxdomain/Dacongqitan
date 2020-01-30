@@ -9,6 +9,7 @@ public class CardMonitor : MonoBehaviour
 {
     [SerializeField]
     private Button presetBtn;
+    [SerializeField]
     private List<GameObject> layerList;
 
     private void Awake()
@@ -20,7 +21,8 @@ public class CardMonitor : MonoBehaviour
     private void Start()
     {
         extractLayers();
-        BindingEvent();
+        layerList[4].SetActive(false);
+        bindingEvent();
     }
 
     private void extractLayers()
@@ -31,6 +33,31 @@ public class CardMonitor : MonoBehaviour
             layerList.Add(layer);
         }
     }
+    private void initInterface()
+    {
+
+        layerList[0].SetActive(true);
+        layerList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask+"yspz", typeof(Sprite)) as Sprite;
+        createBlankCards();
+    }
+
+    private void createBlankCards()
+    {
+        GameObject cardContainer = layerList[4];
+        cardContainer.SetActive(true);
+        Vector3 bounds = cardContainer.GetComponent<MeshFilter>().mesh.bounds.size;
+       
+        print(bounds.x* cardContainer.transform.localScale.x);
+        print(bounds.y* cardContainer.transform.localScale.y);
+
+        GameObject go = new GameObject();
+        go.name = "card 0";
+        go.transform.parent = cardContainer.transform;
+        go.transform.position = cardContainer.transform.position;
+        go.AddComponent<Image>();
+        go.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards+"blank", typeof(Sprite)) as Sprite;
+
+    }
 
     private void hideAllLayers()
     {
@@ -39,11 +66,12 @@ public class CardMonitor : MonoBehaviour
             layer.SetActive(false);
         }
     }
-    private void BindingEvent()
+    private void bindingEvent()
     {
         presetBtn.onClick.AddListener(() =>
         {
             hideAllLayers();
+            initInterface();
         });;
     }
 }
