@@ -53,7 +53,7 @@ public class PanelToggle : MonoBehaviour
             int index = i;
              foreach(Button item in itemsMgrList[i])
              {
-                        item.onClick.AddListener(() => toggleInnerText(item, index));
+                        item.onClick.AddListener(() => ToggleInnerText(item, index));
              }
         }
     }
@@ -83,7 +83,7 @@ public class PanelToggle : MonoBehaviour
         }
     }
 
-    private void toggleInnerText(Button btn, int index)
+    private void ToggleInnerText(Button btn, int index)
     {
         Text itemText = btn.transform.Find("Text").GetComponent<Text>();
         //print(itemText.text.ToString());

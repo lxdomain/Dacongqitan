@@ -11,21 +11,40 @@ public class CardMonitor : MonoBehaviour
     private Button presetBtn;
     [SerializeField]
     private List<GameObject> layerList;
-
+    private GameObject startBtn;
+    private GameObject randBtn;
+    private GameObject prepBtn;
+    private GameObject editBtn;
+    private GameObject backBtn;
+    private List<GameObject> btnList;
+    private GameObject cardContainer;
     private void Awake()
     {
         presetBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonPrep").GetComponent<Button>();
         layerList = new List<GameObject>();
+        btnList = new List<GameObject>();
+        string btnPath = "Canvas/Background/BottomMask/BottomPanel/";
+        startBtn = GameObject.Find(btnPath+"ButtonStart");
+        randBtn = GameObject.Find(btnPath + "ButtonRand");
+        prepBtn = GameObject.Find(btnPath + "ButtonPrep");
+        editBtn = GameObject.Find(btnPath + "ButtonEdit");
+        backBtn = GameObject.Find(btnPath + "ButtonQuit");
+        btnList.Add(startBtn);
+        btnList.Add(randBtn);
+        btnList.Add(prepBtn);
+        btnList.Add(editBtn);
     }
 
     private void Start()
     {
-        extractLayers();
+        ExtractLayers();
+        randBtn.SetActive(false);
+        editBtn.SetActive(false);
         layerList[4].SetActive(false);
-        bindingEvent();
+        BindingEvent();
     }
 
-    private void extractLayers()
+    private void ExtractLayers()
     {
         GameObject[] layerArr = GameObject.FindGameObjectsWithTag("Configuration");
         foreach (GameObject layer in layerArr)
@@ -33,45 +52,92 @@ public class CardMonitor : MonoBehaviour
             layerList.Add(layer);
         }
     }
-    private void initInterface()
+    private void InitInterface()
     {
-
+        Utilities.stageID = Utilities.PRESET_STAGE;
         layerList[0].SetActive(true);
         layerList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask+"yspz", typeof(Sprite)) as Sprite;
-        createBlankCards();
+        CreateBlankCards();
     }
 
-    private void createBlankCards()
+    private void CreateBlankCards()
     {
-        GameObject cardContainer = layerList[4];
-        cardContainer.SetActive(true);
-        Vector3 bounds = cardContainer.GetComponent<MeshFilter>().mesh.bounds.size;
+        GameObject mask = layerList[1];
+        mask.SetActive(true);
+        foreach(GameObject btn in btnList)
+        {
+            btn.SetActive(!btn.activeSelf);
+        }
        
-        print(bounds.x* cardContainer.transform.localScale.x);
-        print(bounds.y* cardContainer.transform.localScale.y);
 
-        GameObject go = new GameObject();
-        go.name = "card 0";
-        go.transform.parent = cardContainer.transform;
-        go.transform.position = cardContainer.transform.position;
-        go.AddComponent<Image>();
-        go.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards+"blank", typeof(Sprite)) as Sprite;
+        cardContainer = layerList[4];
+        cardContainer.SetActive(true);
+        Transform cardPool = cardContainer.transform.GetChild(1);
+
+        //Vector3 bounds = cardContainer.GetComponent<MeshFilter>().mesh.bounds.size;
+        //print(bounds.x* cardContainer.transform.localScale.x);
+        //print(bounds.y* cardContainer.transform.localScale.y);
+
+        GridLayoutGroup glg = cardPool.GetComponent<GridLayoutGroup>();
+        int k = 20;
+        glg.padding.left = 2;
+        glg.padding.top = 2;
+        glg.cellSize = new Vector2(3*k, 4*k);
+        glg.spacing = new Vector2(5, 5);
+        
+        for(int i = 0; i < 32; i++)
+        {
+            GameObject go = new GameObject();
+            go.name = "card "+i;
+            go.transform.parent = cardPool;
+            go.AddComponent<Image>();
+            go.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards+ "blank", typeof(Sprite)) as Sprite;
+        }
+       
 
     }
 
-    private void hideAllLayers()
+    private void HideAllLayers()
     {
         foreach(GameObject layer in layerList)
         {
             layer.SetActive(false);
         }
     }
-    private void bindingEvent()
+
+    private void DestroyCards()
+    {
+        GameObject cardPool = cardContainer.transform.Find("CardPool").gameObject;
+        //print(cardPool.name);
+        Transform[] cards = cardPool.GetComponentsInChildren<Transform>();
+        for(int i = 1; i < cards.Length; i ++)
+        {
+            //print(card.name);
+            Destroy(cards[i].gameObject); 
+        }
+        
+    }
+    private void BindingEvent()
     {
         presetBtn.onClick.AddListener(() =>
         {
-            hideAllLayers();
-            initInterface();
+            HideAllLayers();
+            InitInterface();
         });;
+
+        backBtn.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (Utilities.stageID == Utilities.PRESET_STAGE)
+            {
+                layerList[2].SetActive(true);
+                layerList[3].SetActive(true);
+                layerList[4].SetActive(false);
+                foreach (GameObject btn in btnList)
+                {
+                    btn.SetActive(!btn.activeSelf);
+                }
+                DestroyCards();
+            }
+        });
     }
 }

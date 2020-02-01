@@ -41,7 +41,7 @@ public class CharacterSelector : MonoBehaviour
         backBtn = GameObject.Find("Canvas/Background/TopMask").GetComponentInChildren<Button>();
         backBtn.gameObject.SetActive(false);
         //getBtnsByAbsPath(modeBtnList, "/ModeSet");
-        getBtnsByAbsPath(selectorBtnList, "/Content");
+        GetBtnsByAbsPath(selectorBtnList, "/Content");
         //for (int i = 0; i < rel_paths.Length; i++)
         //{
         //    Button[] selectorGroup = GameObject.Find(abs_path + rel_paths[i] + "/Content").GetComponentsInChildren<Button>();
@@ -50,15 +50,15 @@ public class CharacterSelector : MonoBehaviour
         //        selectorBtnList.Add(selectorGroup[j]);
         //    }
         //}
-        getGameObjectsByAbsPath(modeSetList, "/ModeSet");
-        getGameObjectsByAbsPath(playermsgList, "/Content");
-        getGameObjectsByAbsPath(preSetList, "/PreSet");
+        GetGameObjectsByAbsPath(modeSetList, "/ModeSet");
+        GetGameObjectsByAbsPath(playermsgList, "/Content");
+        GetGameObjectsByAbsPath(preSetList, "/PreSet");
         //for(int i = 0; i < rel_paths.Length; i++)
         //{
         //    GameObject modeSet = GameObject.Find(abs_path + rel_paths[i] + "/ModeSet");
         //    modeSetList.Add(modeSet);
         //}
-        Utilities.initResMap();
+        Utilities.InitResMap();
     }
 
     private void Start()
@@ -114,7 +114,8 @@ public class CharacterSelector : MonoBehaviour
             foreach (GameObject panel in activePanelList)
             {
                 //  avoid the top mask hidden incorrectly.
-                if (panel.name != "TopMask")
+                //  avoid the card container actived incorrectly.
+                if (panel.name != "TopMask"&&panel.name != "CardContainer")
                 {
                         panel.SetActive(!panel.activeSelf);
                 }
@@ -122,7 +123,7 @@ public class CharacterSelector : MonoBehaviour
             backBtn.gameObject.SetActive(false);
             if (Utilities.entranceIsModified)
             {
-                updateEntrance();
+                UpdateEntrance();
                 Utilities.entranceIsModified = false;
             }
             
@@ -130,7 +131,7 @@ public class CharacterSelector : MonoBehaviour
     }
 
 
-    private void updateEntrance()
+    private void UpdateEntrance()
     {
 
         playermsgList[Utilities.entranceID].GetComponentInChildren<Text>().text = Utilities.entranceName;
@@ -146,7 +147,7 @@ public class CharacterSelector : MonoBehaviour
 
 
 
-    private void getBtnsByAbsPath(List<Button> tar,string rel_path)
+    private void GetBtnsByAbsPath(List<Button> tar,string rel_path)
     {
         for (int i = 0; i < rel_paths.Length; i++)
         {
@@ -158,7 +159,7 @@ public class CharacterSelector : MonoBehaviour
         }
     }
 
-    private void getGameObjectsByAbsPath(List<GameObject> tar,string rel_path="")
+    private void GetGameObjectsByAbsPath(List<GameObject> tar,string rel_path="")
     {
         for (int i = 0; i < rel_paths.Length; i++)
         {
@@ -179,7 +180,7 @@ public class CharacterSelector : MonoBehaviour
     {
         activePanelList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask+"ghjs", typeof(Sprite)) as Sprite;
         //activePanelList[0].transform.Find("Text").GetComponentInChildren<Text>().text = "更换角色>>>";
-        activePanelList[activePanelList.Count()-1].SetActive(true);
+        activePanelList[activePanelList.Count()-2].SetActive(true);
         backBtn.gameObject.SetActive(true);
     }
 }

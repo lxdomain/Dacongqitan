@@ -41,14 +41,14 @@ public class CharacterMonitor : MonoBehaviour
 
     private void Start()
     {
-        extractColor();
-        extractPlayerBtn();
-        extractPlayerMsg();
-        extractCharacterBtn();
-        bindingEvent();
+        ExtractColor();
+        ExtractPlayerBtn();
+        ExtractPlayerMsg();
+        ExtractCharacterBtn();
+        BindingEvent();
     }
 
-    private void extractColor()
+    private void ExtractColor()
     {
         for (int i = 0; i < playercolors.Length; i++)
         {
@@ -57,7 +57,7 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void extractPlayerBtn()
+    private void ExtractPlayerBtn()
     {
         for (int i = 0; i < playerbtns.Length; i++)
         {
@@ -65,7 +65,7 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void extractPlayerMsg()
+    private void ExtractPlayerMsg()
     {
         for (int i = 0; i < playerbtns.Length; i++)
         {
@@ -73,7 +73,7 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void extractCharacterBtn()
+    private void ExtractCharacterBtn()
     {
         for (int i = 0; i < charbtns.Length; i++)
         {
@@ -81,7 +81,7 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void checkCharacter()
+    private void CheckCharacter()
     {
         int num = -1;
         foreach(GameObject pmsg in playermsgs)
@@ -109,14 +109,14 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void checkEntrance(int index)
+    private void CheckEntrance(int index)
     {
         entrance_id = index;
         entrance_name = playermsgs[index].GetComponentInChildren<Text>().text;
         //print(entrance_name);
     }
 
-    private void lightenSingleCharacterByIndex(int index)
+    private void LightenSingleCharacterByIndex(int index)
     {
         Image[] cimg = charbtns[index].GetComponentsInChildren<Image>();
         Text[] cmsg = charbtns[index].GetComponentsInChildren<Text>();
@@ -128,10 +128,10 @@ public class CharacterMonitor : MonoBehaviour
         cmsg[2].color = selectcolor;
         charbtns[index].interactable = false;
 
-        updateEntranceName(cmsg[0].text);
+        UpdateEntranceName(cmsg[0].text);
     }
 
-    private void updateEntranceName(string modified_name)
+    private void UpdateEntranceName(string modified_name)
     {
         entrance_name = modified_name;
     }
@@ -144,8 +144,11 @@ public class CharacterMonitor : MonoBehaviour
         {
             Image[] cimg = charbtns[i].GetComponentsInChildren<Image>();
             Text[] cmsg = charbtns[i].GetComponentsInChildren<Text>();
+            //print(i + " " + cmsg[1].color + "->" + playercolors[index]);
             if (cmsg[1].color == playercolors[index])
             {
+                //print("ok");
+                //print(cmsg[0].text);
                 cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[cmsg[0].text], typeof(Sprite)) as Sprite;
                 cmsg[0].color = defaultcolor;
                 cmsg[1].color = Color.white;// Just to distinguish with the players color.
@@ -157,7 +160,7 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void bindingEvent()
+    private void BindingEvent()
     {
         for(int i = 0; i < playerbtns.Length; i++)
         {
@@ -165,8 +168,8 @@ public class CharacterMonitor : MonoBehaviour
             playerbtns[index].onClick.AddListener(() =>
             {
                 //entrance_name = btn.GetComponentInParent<GameObject>().GetComponentInChildren<Text>().text;
-                checkEntrance(index);
-                checkCharacter();
+                CheckEntrance(index);
+                CheckCharacter();
             });
         }
 
@@ -176,7 +179,7 @@ public class CharacterMonitor : MonoBehaviour
             charbtns[index].onClick.AddListener(() =>
             {
                 ExtinctSingleCharacterByIndex(entrance_id);
-                lightenSingleCharacterByIndex(index);
+                LightenSingleCharacterByIndex(index);
 
                 Utilities.entranceIsModified = true;
                 Utilities.entranceID = entrance_id;
