@@ -58,7 +58,7 @@ public class CharacterSelector : MonoBehaviour
         //    GameObject modeSet = GameObject.Find(abs_path + rel_paths[i] + "/ModeSet");
         //    modeSetList.Add(modeSet);
         //}
-        Utilities.InitResMap();
+        Utilities.InitAll();
     }
 
     private void Start()
