@@ -78,7 +78,7 @@ public class CardMonitor : MonoBehaviour
     }
     private void InitInterface()
     {
-        Utilities.stageID = Utilities.PRESET_STAGE;
+        Utilities.stageID = Utilities.StageOptions.PRESET_STAGE;
         layerList[0].SetActive(true);
         layerList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask+"yspz", typeof(Sprite)) as Sprite;
         CreateBlankCards();
@@ -175,7 +175,7 @@ public class CardMonitor : MonoBehaviour
         }   
     }
 
-    private void DisplayMessageWhenMouseEnter(Button btn,Utilities.Card card)
+    private void DisplayMessageWhenMouseEnter(Button btn,Card card)
     {
         btn.onClick.AddListener(() =>
         {
@@ -183,44 +183,44 @@ public class CardMonitor : MonoBehaviour
             Transform[] tfs = cardPreview.GetComponentsInRealChildren<Transform>();
             tfs[0].gameObject.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards+card.Name+"_n", typeof(Sprite)) as Sprite;
             tfs[1].gameObject.GetComponent<TextMeshProUGUI>().text = card.Name;
-            tfs[3].gameObject.GetComponent<TextMeshProUGUI>().text = card.TypeName;
+            tfs[3].gameObject.GetComponent<TextMeshProUGUI>().text = MyTool.GetEnumDescription(card.TypeName) ;
             tfs[4].gameObject.GetComponent<TextMeshProUGUI>().text = card.Description;
         });
     }
 
     private void AttachCard()
     {
-        barList[0].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.McardsNum.ToString();
-        barList[1].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.DcardsNum.ToString();
-        barList[2].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.GcardsNum.ToString();
-        barList[3].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.TotalNum.ToString();
+        barList[0].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.MarionetteCardNumber.ToString();
+        barList[1].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.DrawingCardNumber.ToString();
+        barList[2].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.GoodCardNumber.ToString();
+        barList[3].transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = Utilities.cp1.TotalNumber.ToString();
         ExtractCards();
         int j = 0;
-        for(int i = 0; i < Utilities.cp1.McardsNum;i++)
+        for(int i = 0; i < Utilities.cp1.MarionetteCardNumber;i++)
         {
-            string pathPrefix = Utilities.res_folder_path_cards + Utilities.cp1.Mcards[i].Name;
+            string pathPrefix = Utilities.res_folder_path_cards + Utilities.cp1.MarionetteCardList[i].Name;
             Button btn = cardList[j].GetComponent<Button>();
             ChangeSpriteState(btn, pathPrefix);
-            DisplayMessageWhenMouseEnter(btn, Utilities.cp1.Mcards[i]);
+            DisplayMessageWhenMouseEnter(btn, Utilities.cp1.MarionetteCardList[i]);
             cardList[j++].GetComponent<Image>().sprite = Resources.Load(pathPrefix + "_n", typeof(Sprite)) as Sprite;
         }
-        for (int i = 0; i < Utilities.cp1.DcardsNum; i++)
+        for (int i = 0; i < Utilities.cp1.DrawingCardNumber; i++)
         {
-            string pathPrefix = Utilities.res_folder_path_cards + Utilities.cp1.Dcards[i].Name;
+            string pathPrefix = Utilities.res_folder_path_cards + Utilities.cp1.DrawingCardList[i].Name;
             ChangeSpriteState(cardList[j].GetComponent<Button>(), pathPrefix);
             Button btn = cardList[j].GetComponent<Button>();
-            DisplayMessageWhenMouseEnter(btn, Utilities.cp1.Dcards[i]);
+            DisplayMessageWhenMouseEnter(btn, Utilities.cp1.DrawingCardList[i]);
             cardList[j++].GetComponent<Image>().sprite = Resources.Load(pathPrefix + "_n", typeof(Sprite)) as Sprite;
         }
-        for (int i = 0; i < Utilities.cp1.GcardsNum; i++)
+        for (int i = 0; i < Utilities.cp1.GoodCardNumber; i++)
         {
-            string pathPrefix = Utilities.res_folder_path_cards + Utilities.cp1.Gcards[i].Name;
+            string pathPrefix = Utilities.res_folder_path_cards + Utilities.cp1.GoodCardList[i].Name;
             ChangeSpriteState(cardList[j].GetComponent<Button>(), pathPrefix);
             Button btn = cardList[j].GetComponent<Button>();
-            DisplayMessageWhenMouseEnter(btn, Utilities.cp1.Gcards[i]);
+            DisplayMessageWhenMouseEnter(btn, Utilities.cp1.GoodCardList[i]);
             cardList[j++].GetComponent<Image>().sprite = Resources.Load(pathPrefix + "_n", typeof(Sprite)) as Sprite;
         }
-        for(int k = j; k < Utilities.cp1.MAX_TOTAL_NUM; k++)
+        for(int k = j; k < /*Utilities.cp1.MAX_TOTAL_NUM*/32; k++)
         {
             string pathPrefix = Utilities.res_folder_path_cards + "blank";
             ChangeSpriteState(cardList[k].GetComponent<Button>(), pathPrefix,true);
@@ -237,7 +237,7 @@ public class CardMonitor : MonoBehaviour
 
         backBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
-            if (Utilities.stageID == Utilities.PRESET_STAGE)
+            if (Utilities.stageID == Utilities.StageOptions.PRESET_STAGE)
             {
                 layerList[2].SetActive(true);
                 layerList[3].SetActive(true);
@@ -252,8 +252,7 @@ public class CardMonitor : MonoBehaviour
 
         randBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
-            Utilities.cp1.GenerateCardsNumberRandomly();
-            Utilities.cp1.GenerateCardRandomly();
+            Utilities.cp1.GenerateCardPresetRandomly();
             AttachCard();
         });
     }

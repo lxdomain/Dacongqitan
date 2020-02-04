@@ -136,10 +136,10 @@ public class CharacterSelector : MonoBehaviour
 
         playermsgList[Utilities.entranceID].GetComponentInChildren<Text>().text = Utilities.entranceName;
         Button targetBtn = playermsgList[Utilities.entranceID].GetComponentInChildren<Button>(); 
-        targetBtn.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[Utilities.entranceName], typeof(Sprite)) as Sprite;
+        targetBtn.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.entranceName, typeof(Sprite)) as Sprite;
 
         SpriteState sp = new SpriteState();
-        Sprite tmpSprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[Utilities.entranceName]+"_hover", typeof(Sprite)) as Sprite;
+        Sprite tmpSprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.entranceName+"_hover", typeof(Sprite)) as Sprite;
         sp.highlightedSprite = tmpSprite;
         sp.pressedSprite = tmpSprite;
         targetBtn.spriteState = sp;

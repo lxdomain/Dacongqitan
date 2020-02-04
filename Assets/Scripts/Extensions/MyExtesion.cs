@@ -2,11 +2,11 @@
 using UnityEngine;
 
 /// <summary>
-/// My Extesions for class methods in UnityEngine.
+/// Extesion class for Unity.
 /// <summary>
-public static class MyExtesions
+public static class MyExtesion
 {
-    public static T[] GetComponentsInRealChildren<T>(this GameObject go , bool includeInactive = false)
+    public static T[] GetComponentsInRealChildren<T>(this GameObject go, bool includeInactive = false)
     {
         List<T> TList = new List<T>();
         TList.AddRange(go.GetComponentsInChildren<T>(includeInactive));

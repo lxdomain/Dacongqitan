@@ -96,7 +96,7 @@ public class CharacterMonitor : MonoBehaviour
                 Text[] cmsg = charbtns[i].GetComponentsInChildren<Text>();
                 if(name == cmsg[0].text)
                 {
-                    cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure+Utilities.resMap[cmsg[0].text]+"_hover", typeof(Sprite)) as Sprite;
+                    cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure+cmsg[0].text+"_hover", typeof(Sprite)) as Sprite;
                     cmsg[0].color = selectcolor;
                     cmsg[1].color = playercolors[num];
                     cmsg[1].text = "当前玩家" + players[num] + "控制";
@@ -121,7 +121,7 @@ public class CharacterMonitor : MonoBehaviour
         Image[] cimg = charbtns[index].GetComponentsInChildren<Image>();
         Text[] cmsg = charbtns[index].GetComponentsInChildren<Text>();
 
-        cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[cmsg[0].text]+"_hover", typeof(Sprite)) as Sprite;
+        cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure + cmsg[0].text+"_hover", typeof(Sprite)) as Sprite;
         cmsg[0].color = selectcolor;
         cmsg[1].color = playercolors[entrance_id];
         cmsg[1].text = "当前玩家" + players[entrance_id] + "控制";
@@ -149,7 +149,7 @@ public class CharacterMonitor : MonoBehaviour
             {
                 //print("ok");
                 //print(cmsg[0].text);
-                cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure + Utilities.resMap[cmsg[0].text], typeof(Sprite)) as Sprite;
+                cimg[1].sprite = Resources.Load(Utilities.res_folder_path_figure + cmsg[0].text, typeof(Sprite)) as Sprite;
                 cmsg[0].color = defaultcolor;
                 cmsg[1].color = Color.white;// Just to distinguish with the players color.
                 cmsg[1].text = "";

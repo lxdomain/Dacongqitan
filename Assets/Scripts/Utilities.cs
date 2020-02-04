@@ -1,215 +1,15 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using System.ComponentModel;
 
 /// <summary>
-/// Class that handles utilities.
+/// This static class is used to handle utilities.
 /// <summary>
-public class Utilities
+public static class Utilities
 {
-    public class Card
+    public enum StageOptions
     {
-        #region field
-        private bool _isSelected;
-        private int _id;
-        private string _name;
-        private string _description;
-        private string _typeName;
-        #endregion
-
-        #region properity
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set { _isSelected = value; }
-        }
-        public int ID
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
-        public string Description
-        {
-            get { return _description; }
-            set { _description = value; }
-        }
-        public string TypeName
-        {
-            get { return _typeName; }
-            set { _typeName = value; }
-        }
-        #endregion
-        public Card(int id,string name,string description)
-        {
-            this.ID = id;
-            this.Name = name;
-            this.Description = description;
-            this.IsSelected = false;
-        }
-
-    }
-
-    public class MarionetteCard : Card
-    {
-        protected int typeID;
-
-        public MarionetteCard(int id,string name,string description) : base(id, name, description)
-        {
-            this.typeID = 1;
-            this.TypeName = "人偶牌";
-        }
-    }
-
-    public class DrawingCard : Card
-    {
-        protected int typeID;
-        public DrawingCard(int id, string name, string description) : base(id, name, description)
-        {
-            this.typeID = 2;
-            this.TypeName = "图纸牌";
-        }
-    }
-
-    public class GoodCard : Card
-    {
-        protected int typeID;
-       
-        public GoodCard(int id,string name, string description) : base(id, name, description)
-        {
-            this.typeID = 3;
-            this.TypeName = "物品牌";
-        }
-    }
-
-    public class CardPreset
-    {
-        #region field
-        private int _mcardsNum;
-        private int _dcardsNum;
-        private int _gcardsNum;
-        private int _totalNum;
-        private List<MarionetteCard> _mcards;
-        private List<DrawingCard> _dcards;
-        private List<GoodCard> _gcards;
-        #endregion
-
-        #region properity
-        public int McardsNum
-        {
-            get { return _mcardsNum; }
-            set { _mcardsNum = value; }
-        }
-        public int DcardsNum
-        {
-            get { return _dcardsNum; }
-            set { _dcardsNum = value; }
-        }
-        public int GcardsNum
-        {
-            get { return _gcardsNum; }
-            set { _gcardsNum = value; }
-        }
-        public int TotalNum
-        {
-            get { return _totalNum; }
-            set { _totalNum = value; }
-        }
-        public List<MarionetteCard> Mcards
-        {
-            get { return _mcards; }
-        }
-        public List<DrawingCard> Dcards
-        {
-            get { return _dcards; }
-        }
-        public List<GoodCard> Gcards
-        {
-            get { return _gcards; }
-        }
-        #endregion
-
-        public  int MIN_NUM = 8;
-        public  int MAX_NUM = 16;
-        public  int MIN_TOTAL_NUM = 24;
-        public  int MAX_TOTAL_NUM = 32;
-
-        public CardPreset()
-        {
-            _mcards = new List<MarionetteCard>();
-            _dcards = new List<DrawingCard>();
-            _gcards = new List<GoodCard>();
-            
-        }
-
-        private void ClearAll()
-        {
-            _mcards.Clear();
-            _dcards.Clear();
-            _gcards.Clear();
-        }
-
-        public void GenerateCardsNumberRandomly()
-        {
-            this.TotalNum = 0;
-            //Random random = new Random();
-            while(this.TotalNum < MIN_TOTAL_NUM || this.TotalNum > MAX_TOTAL_NUM)
-            {
-                this.McardsNum = Random.Range(MIN_NUM, MAX_NUM);
-                this.DcardsNum = Random.Range(MIN_NUM, MAX_NUM);
-                this.GcardsNum = Random.Range(MIN_NUM, MAX_NUM);
-                this.TotalNum = this.McardsNum + this.DcardsNum + this.GcardsNum;
-            }
-
-        }
-
-        public void GenerateCardRandomly()
-        {
-            EnableCardSelections();
-            ClearAll();
-
-            int tmpNum = this.McardsNum;
-            while(tmpNum > 0)
-            {
-                int randomIndex = Random.Range(0, MarionetteCardNum - 1);
-                MarionetteCard card = MarionetteCardList[randomIndex];
-                if (!card.IsSelected)
-                {
-                    tmpNum--;
-                    card.IsSelected = true;
-                    _mcards.Add(card);
-                }
-            }
-
-            tmpNum = this.DcardsNum;
-            while (tmpNum > 0)
-            {
-                int randomIndex = Random.Range(0, DrawingCardNum - 1);
-                DrawingCard card = DrawingCardList[randomIndex];
-                if (!card.IsSelected)
-                {
-                    tmpNum--;
-                    card.IsSelected = true;
-                    _dcards.Add(card);
-                }
-            }
-
-            tmpNum = this.GcardsNum;
-            while (tmpNum > 0)
-            {
-                int randomIndex = Random.Range(0, GoodCardNum - 1);
-                GoodCard card = GoodCardList[randomIndex];
-                if (!card.IsSelected)
-                {
-                    tmpNum--;
-                    card.IsSelected = true;
-                    _gcards.Add(card);
-                }
-            }
-        }
+        [Description("预设牌组界面")]
+        PRESET_STAGE
     }
 
     /**********************The following variables will be used in CharacterSelector&CharacterMonitor.*****************************************/
@@ -217,36 +17,31 @@ public class Utilities
     public static bool entranceIsModified = false;
     public static int entranceID;
     public static string entranceName;
-    public static int stageID;
-    public static int PRESET_STAGE;
+
+    public static StageOptions stageID;
     /************************************************THE END****************************************************************************************/
+    public static string res_folder_path_figure = "Images/Figures/";
+    public static string res_folder_path_mask = "Images/Masks/";
+    public static string res_folder_path_cards = "Images/Cards/";
+    public static string res_folder_path_prefabs = "Prefabs/";
 
-
-    public static int MarionetteCardNum = 32;
-    public static int DrawingCardNum = 28;
-    public static int GoodCardNum = 23;
+    public const int MARIONETTE_CARD_NUM = 32;
+    public const int DRAWING_CARD_NUM = 28;
+    public const int GOOD_CARD_NUM = 23;
     public static MarionetteCard[] MarionetteCardList;
     public static DrawingCard[] DrawingCardList;
     public static GoodCard[] GoodCardList;
-    public static Dictionary<int, MarionetteCard> MarionetteCardMap;
-    public static Dictionary<int, DrawingCard> DrawingCardMap;
-    public static Dictionary<int, GoodCard> GoodCardMap;
+
+    public static GameConfiguration gc;
 
     public static CardPreset cp1;
     public static CardPreset cp2;
     public static CardPreset cp3;
     public static CardPreset cp4;
 
-    public static string res_folder_path_figure = "Images/Figures/";
-    public static string res_folder_path_mask = "Images/Masks/";
-    public static string res_folder_path_cards = "Images/Cards/";
-    public static string res_folder_path_prefabs = "Prefabs/";
-    public static Dictionary<string, string> resMap;
-
-
-    private static void EnableCardSelections()
+    public static void DisableAllCards()
     {
-        foreach(MarionetteCard card in MarionetteCardList)
+        foreach (MarionetteCard card in MarionetteCardList)
         {
             card.IsSelected = false;
         }
@@ -263,32 +58,20 @@ public class Utilities
 
     public static void InitAll()
     {
-        InitResMap();
-        InitCardList();
-        InitCardPreset();
+        MarionetteCardList = new MarionetteCard[MARIONETTE_CARD_NUM];
+        DrawingCardList = new DrawingCard[DRAWING_CARD_NUM];
+        GoodCardList = new GoodCard[GOOD_CARD_NUM];
+        InitAllCardList();
+        gc = new GameConfiguration();
+        gc.PrintAll();
+        cp1 = new CardPreset();
+        cp2 = new CardPreset();
+        cp3 = new CardPreset();
+        cp4 = new CardPreset();
     }
 
-
-    public static void InitResMap()
+    public static void InitAllCardList()
     {
-        resMap = new Dictionary<string, string>
-        {
-            { "原天柿", "yts" },
-            { "囡囡", "nn" },
-            { "外公", "wg" },
-            { "二大爷", "edy" },
-            { "七舅", "qj" },
-            { "花栗子", "hlz" },
-            { "冬白", "db" },
-            { "闪电", "sd" }
-        };
-    }
-    public static void InitCardList()
-    {
-        MarionetteCardList = new MarionetteCard[MarionetteCardNum];
-        DrawingCardList = new DrawingCard[DrawingCardNum];
-        GoodCardList = new GoodCard[GoodCardNum];
-
         MarionetteCardList[0] = new MarionetteCard(0, "风晴雪", "派遣时，每3回合附近2格地块内的己方人偶工具数+1");
         MarionetteCardList[1] = new MarionetteCard(1, "方兰生", "派遣时，经过此场景的玩家只可再前进1格地块");
         MarionetteCardList[2] = new MarionetteCard(2, "阿阮", "退场时，拥有者立即获得卡牌露草");
@@ -374,30 +157,5 @@ public class Utilities
         GoodCardList[20] = new GoodCard(20, "梦魂枝", "指定下一次扑卖点数");
         GoodCardList[21] = new GoodCard(21, "青丘尘中记", "指定一名玩家与自己平分葱，若刘兄在手牌中，多获得10%葱");
         GoodCardList[22] = new GoodCard(22, "天鹿", "指定一名人偶工具锋利度+1，若对象为北洛或玄戈&霓商，则+2");
-
-        MarionetteCardMap = new Dictionary<int, MarionetteCard>();
-        DrawingCardMap = new Dictionary<int, DrawingCard>(); 
-        GoodCardMap = new Dictionary<int, GoodCard>();
-        for(int i = 0; i < MarionetteCardNum; i++)
-        {
-            //MarionetteCardMap.Add(MarionetteCardList[i]);
-        }
-        for (int i = 0; i < DrawingCardNum; i++)
-        {
-            //DrawingCardMap.Add(DrawingCardList[i]);
-        }
-        for (int i = 0; i < GoodCardNum; i++)
-        {
-            //GoodCardMap.Add(GoodCardList[i]);
-        }
     }
-
-    public static void InitCardPreset()
-    {
-        cp1 = new CardPreset();
-        cp2 = new CardPreset();
-        cp3 = new CardPreset();
-        cp4 = new CardPreset();
-    }
-
 }
