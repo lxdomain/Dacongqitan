@@ -8,6 +8,7 @@ public static class Utilities
 {
     public enum StageOptions
     {
+        NONE,
         [Description("预设牌组界面")]
         PRESET_STAGE
     }
@@ -63,8 +64,10 @@ public static class Utilities
         GoodCardList = new GoodCard[GOOD_CARD_NUM];
         InitAllCardList();
         gc = new GameConfiguration();
-        gc.PrintAll();
+        //gc.PrintAll();
         cp1 = new CardPreset();
+        cp1.GenerateCardPresetRandomly();
+        cp1.PrintAll();
         cp2 = new CardPreset();
         cp3 = new CardPreset();
         cp4 = new CardPreset();

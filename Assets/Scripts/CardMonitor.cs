@@ -41,16 +41,20 @@ public class CardMonitor : MonoBehaviour
         btnList.Add(randBtn);
         btnList.Add(prepBtn);
         btnList.Add(editBtn);
+        cardPreview = GameObject.Find("Canvas/Background/CardContainer/CardPreview");
     }
 
     private void Start()
     {
         ExtractLayers();
+        cardContainer = layerList[4];
         ExtractBars();
         randBtn.SetActive(false);
         editBtn.SetActive(false);
-        layerList[4].SetActive(false);
+        GeneratePresetCard();
+        cardContainer.SetActive(false);    
         BindingEvent();
+
     }
 
     private void ExtractLayers()
@@ -81,12 +85,11 @@ public class CardMonitor : MonoBehaviour
         Utilities.stageID = Utilities.StageOptions.PRESET_STAGE;
         layerList[0].SetActive(true);
         layerList[0].GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_mask+"yspz", typeof(Sprite)) as Sprite;
-        CreateBlankCards();
-        cardPreview = GameObject.Find("Canvas/Background/CardContainer/CardPreview");
+        DisplayPresetCard();
         cardPreview.SetActive(false);
     }
 
-    private void CreateBlankCards()
+    private void DisplayPresetCard()
     {
         GameObject mask = layerList[1];
         mask.SetActive(true);
@@ -94,10 +97,13 @@ public class CardMonitor : MonoBehaviour
         {
             btn.SetActive(!btn.activeSelf);
         }
-       
-
-        cardContainer = layerList[4];
         cardContainer.SetActive(true);
+
+    }
+
+    private void GeneratePresetCard()
+    {
+
         Transform cardPool = cardContainer.transform.GetChild(1);
 
         //Vector3 bounds = cardContainer.GetComponent<MeshFilter>().mesh.bounds.size;
@@ -108,21 +114,20 @@ public class CardMonitor : MonoBehaviour
         int k = 20;
         glg.padding.left = 2;
         glg.padding.top = 2;
-        glg.cellSize = new Vector2(3*k, 4*k);
+        glg.cellSize = new Vector2(3 * k, 4 * k);
         glg.spacing = new Vector2(5, 5);
-        
-        for(int i = 0; i < 32; i++)
+
+        for (int i = 0; i < 32; i++)
         {
-            GameObject go = (GameObject)Resources.Load(Utilities.res_folder_path_prefabs+"card");            
-            go.name = "card "+i;     
-            go = Instantiate(go);            
+            GameObject go = (GameObject)Resources.Load(Utilities.res_folder_path_prefabs + "card");
+            go.name = "card " + i;
+            go = Instantiate(go);
             go.transform.SetParent(cardPool);
 
             //go.AddComponent<Image>();
             //go.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards+ "blank", typeof(Sprite)) as Sprite;
             //go.AddComponent<Button>();
         }
-       
 
     }
 
@@ -175,17 +180,27 @@ public class CardMonitor : MonoBehaviour
         }   
     }
 
-    private void DisplayMessageWhenMouseEnter(Button btn,Card card)
+    private void DisplayMessageWhenMouseEnter(Button btn, Card card, bool isBlank = false)
     {
-        btn.onClick.AddListener(() =>
+        if (!isBlank)
         {
-            cardPreview.SetActive(true);
-            Transform[] tfs = cardPreview.GetComponentsInRealChildren<Transform>();
-            tfs[0].gameObject.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards+card.Name+"_n", typeof(Sprite)) as Sprite;
-            tfs[1].gameObject.GetComponent<TextMeshProUGUI>().text = card.Name;
-            tfs[3].gameObject.GetComponent<TextMeshProUGUI>().text = MyTool.GetEnumDescription(card.TypeName) ;
-            tfs[4].gameObject.GetComponent<TextMeshProUGUI>().text = card.Description;
-        });
+            btn.onClick.AddListener(() =>
+            {
+                cardPreview.SetActive(true);
+                Transform[] tfs = cardPreview.GetComponentsInRealChildren<Transform>();
+                tfs[0].gameObject.GetComponent<Image>().sprite = Resources.Load(Utilities.res_folder_path_cards + card.Name + "_n", typeof(Sprite)) as Sprite;
+                tfs[1].gameObject.GetComponent<TextMeshProUGUI>().text = card.Name;
+                tfs[3].gameObject.GetComponent<TextMeshProUGUI>().text = MyTool.GetEnumDescription(card.TypeName);
+                tfs[4].gameObject.GetComponent<TextMeshProUGUI>().text = card.Description;
+            });
+        }
+        else
+        {
+            btn.onClick.AddListener(() =>
+            {
+                cardPreview.SetActive(false);
+            });
+        }
     }
 
     private void AttachCard()
@@ -224,6 +239,8 @@ public class CardMonitor : MonoBehaviour
         {
             string pathPrefix = Utilities.res_folder_path_cards + "blank";
             ChangeSpriteState(cardList[k].GetComponent<Button>(), pathPrefix,true);
+            Button btn = cardList[k].GetComponent<Button>();
+            DisplayMessageWhenMouseEnter(btn, null, true);
             cardList[k].GetComponent<Image>().sprite = Resources.Load(pathPrefix, typeof(Sprite)) as Sprite;
         }
     }
@@ -233,6 +250,7 @@ public class CardMonitor : MonoBehaviour
         {
             HideAllLayers();
             InitInterface();
+            AttachCard();
         });;
 
         backBtn.GetComponent<Button>().onClick.AddListener(() =>
@@ -246,13 +264,16 @@ public class CardMonitor : MonoBehaviour
                 {
                     btn.SetActive(!btn.activeSelf);
                 }
-                DestroyCards();
+                //DestroyCards();
             }
         });
 
         randBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
+            Utilities.DisableAllCards();
+            Utilities.cp1.ClearAll();
             Utilities.cp1.GenerateCardPresetRandomly();
+            Utilities.cp1.PrintAll();
             AttachCard();
         });
     }

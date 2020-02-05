@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using UnityEngine;
 
 /// <summary>
 /// This class is used to save basic attributes for each card.
@@ -31,6 +33,13 @@ public class Card
         this.IsSelected = IsSelected;
     }
 
+    public void PrintAll()
+    {
+        string infos = String.Format("{0} {1} {2} {3} {4}", ID, Name, Description, IsSelected,
+            MyTool.GetEnumDescription(TypeName)
+        );
+        Debug.Log(infos);
+    }
 }
 
 /// <summary>

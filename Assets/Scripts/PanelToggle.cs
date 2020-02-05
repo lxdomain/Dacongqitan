@@ -16,7 +16,7 @@ public class PanelToggle : MonoBehaviour
     private List<GameObject> panelList;
     
     private GameObject playerContainer;
-
+    private Button backBtn;
 
     private void Awake()
     {
@@ -39,6 +39,7 @@ public class PanelToggle : MonoBehaviour
         }
 
         playerContainer = GameObject.Find("Canvas/Background/RightCenterPanel/PlayerContainer");
+        backBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonQuit").GetComponent<Button>();
     }
 
     private void Start()
@@ -56,6 +57,17 @@ public class PanelToggle : MonoBehaviour
                         item.onClick.AddListener(() => ToggleInnerText(item, index));
              }
         }
+        backBtn.onClick.AddListener(() =>
+        {
+            foreach(GameObject go in panelList)
+            {
+                if(go.activeSelf == true)
+                {
+                    go.SetActive(false);
+                }
+            }
+            playerContainer.SetActive(true);
+        });
     }
 
     

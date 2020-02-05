@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -47,9 +48,9 @@ public class CardPreset
         this.TotalNumber = 0;
         while (this.TotalNumber < MIN_TOTAL_NUM || this.TotalNumber > MAX_TOTAL_NUM)
         {
-            this.MarionetteCardNumber = Random.Range(MIN_EACH_NUM, MAX_EACH_NUM+1);
-            this.DrawingCardNumber = Random.Range(MIN_EACH_NUM, MAX_EACH_NUM+1);
-            this.GoodCardNumber = Random.Range(MIN_EACH_NUM, MAX_EACH_NUM+1);
+            this.MarionetteCardNumber = UnityEngine.Random.Range(MIN_EACH_NUM, MAX_EACH_NUM+1);
+            this.DrawingCardNumber = UnityEngine.Random.Range(MIN_EACH_NUM, MAX_EACH_NUM+1);
+            this.GoodCardNumber = UnityEngine.Random.Range(MIN_EACH_NUM, MAX_EACH_NUM+1);
             this.TotalNumber = this.MarionetteCardNumber + this.DrawingCardNumber + this.GoodCardNumber;
         }
     }
@@ -60,7 +61,7 @@ public class CardPreset
         int tmpNum = this.MarionetteCardNumber;
         while (tmpNum > 0)
         {
-            int randomIndex = Random.Range(0, Utilities.MARIONETTE_CARD_NUM);
+            int randomIndex = UnityEngine.Random.Range(0, Utilities.MARIONETTE_CARD_NUM);
             MarionetteCard card = Utilities.MarionetteCardList[randomIndex];
             if (!card.IsSelected)
             {
@@ -73,7 +74,7 @@ public class CardPreset
         tmpNum = this.DrawingCardNumber;
         while (tmpNum > 0)
         {
-            int randomIndex = Random.Range(0, Utilities.DRAWING_CARD_NUM);
+            int randomIndex = UnityEngine.Random.Range(0, Utilities.DRAWING_CARD_NUM);
             DrawingCard card = Utilities.DrawingCardList[randomIndex];
             if (!card.IsSelected)
             {
@@ -86,7 +87,7 @@ public class CardPreset
         tmpNum = this.GoodCardNumber;
         while (tmpNum > 0)
         {
-            int randomIndex = Random.Range(0, Utilities.GOOD_CARD_NUM);
+            int randomIndex = UnityEngine.Random.Range(0, Utilities.GOOD_CARD_NUM);
             GoodCard card = Utilities.GoodCardList[randomIndex];
             if (!card.IsSelected)
             {
@@ -95,5 +96,25 @@ public class CardPreset
                 tmpNum--;
             }
         }
+    }
+
+    public void PrintAll()
+    {
+        Debug.Log(String.Format("人偶牌 {0}", MarionetteCardNumber));
+        foreach(Card card in MarionetteCardList)
+        {
+            card.PrintAll();
+        }
+        Debug.Log(String.Format("图纸牌 {0}", DrawingCardNumber));
+        foreach (Card card in DrawingCardList)
+        {
+            card.PrintAll();
+        }
+        Debug.Log(String.Format("物品牌 {0}", GoodCardNumber));
+        foreach (Card card in GoodCardList)
+        {
+            card.PrintAll();
+        }
+        Debug.Log(String.Format("牌组总数 {0}", TotalNumber));
     }
 }
