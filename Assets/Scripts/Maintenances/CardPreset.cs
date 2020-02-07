@@ -15,6 +15,7 @@ public class CardPreset
     public List<MarionetteCard> MarionetteCardList { get; }
     public List<DrawingCard> DrawingCardList { get; }
     public List<GoodCard> GoodCardList { get; }
+    public bool RandomTag { get; set; }
     #endregion
 
     const int MIN_EACH_NUM = 8;
@@ -27,6 +28,7 @@ public class CardPreset
         MarionetteCardList = new List<MarionetteCard>();
         DrawingCardList = new List<DrawingCard>();
         GoodCardList = new List<GoodCard>();
+        RandomTag = false;
     }
 
     public void ClearAll()
@@ -41,6 +43,7 @@ public class CardPreset
         ClearAll();
         GenerateCardNumberRandomly();
         GenerateCardListRandomly();
+        RandomTag = true;
     }
 
     private void GenerateCardNumberRandomly()

@@ -25,6 +25,7 @@ public static class Utilities
     public static string res_folder_path_mask = "Images/Masks/";
     public static string res_folder_path_cards = "Images/Cards/";
     public static string res_folder_path_prefabs = "Prefabs/";
+    public static string res_folder_path_tmp = "TextMeshPro/";
 
     public const int MARIONETTE_CARD_NUM = 32;
     public const int DRAWING_CARD_NUM = 28;
@@ -67,7 +68,7 @@ public static class Utilities
         //gc.PrintAll();
         cp1 = new CardPreset();
         cp1.GenerateCardPresetRandomly();
-        cp1.PrintAll();
+        //cp1.PrintAll();
         cp2 = new CardPreset();
         cp3 = new CardPreset();
         cp4 = new CardPreset();
