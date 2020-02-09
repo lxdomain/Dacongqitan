@@ -39,7 +39,7 @@ public class PanelToggle : MonoBehaviour
         }
 
         playerContainer = GameObject.Find("Canvas/Background/RightCenterPanel/PlayerContainer");
-        backBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonQuit").GetComponent<Button>();
+        backBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonBack").GetComponent<Button>();
     }
 
     private void Start()

@@ -12,15 +12,19 @@ public class CardMonitor : MonoBehaviour
     [SerializeField]
     private Button presetBtn;
     [SerializeField]
-    private List<GameObject> layerList;
+    private List<GameObject> layerList;    
+    private GameObject backBtn;
+    private GameObject abandonBtn;
     private GameObject startBtn;
     private GameObject randBtn;
+    private GameObject clearBtn;
     private GameObject prepBtn;
     private GameObject editBtn;
-    private GameObject backBtn;
+    private GameObject saveBtn;
     private List<GameObject> btnList;
     private GameObject cardContainer;
     private GameObject cardPreview;
+    private GameObject innerEditWrapper;
     [SerializeField]
     private List<GameObject> barList;
     [SerializeField]
@@ -40,6 +44,7 @@ public class CardMonitor : MonoBehaviour
         cardList = new List<GameObject>();
         btnToCp = new Dictionary<Button, CardPreset>();
         cardPreview = GameObject.Find("Canvas/Background/CardContainer/CardPreview");
+        innerEditWrapper = GameObject.Find("Canvas/Background/InnerEditWrapper");
         presetBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonPrep").GetComponent<Button>();
     }
 
@@ -55,7 +60,11 @@ public class CardMonitor : MonoBehaviour
         GeneratePresetCard();
         ExtractCards();
         cardContainer.SetActive(false);
+        innerEditWrapper.SetActive(false);
         BindingEvent();
+        abandonBtn.SetActive(false);
+        clearBtn.SetActive(false);
+        saveBtn.SetActive(false);
         SetPresets(false);
         InitMap();
     }
@@ -80,12 +89,15 @@ public class CardMonitor : MonoBehaviour
 
     private void ExtractBottomBtns()
     {
-        string btnPath = "Canvas/Background/BottomMask/BottomPanel/";
+        string btnPath = "Canvas/Background/BottomMask/BottomPanel/";        
+        backBtn = GameObject.Find(btnPath + "ButtonBack");
+        abandonBtn = GameObject.Find(btnPath + "ButtonAbandon");
         startBtn = GameObject.Find(btnPath + "ButtonStart");
         randBtn = GameObject.Find(btnPath + "ButtonRand");
+        clearBtn = GameObject.Find(btnPath + "ButtonClear");
         prepBtn = GameObject.Find(btnPath + "ButtonPrep");
         editBtn = GameObject.Find(btnPath + "ButtonEdit");
-        backBtn = GameObject.Find(btnPath + "ButtonQuit");
+        saveBtn = GameObject.Find(btnPath + "ButtonSave");
         btnList.Add(startBtn);
         btnList.Add(randBtn);
         btnList.Add(prepBtn);
@@ -388,6 +400,36 @@ public class CardMonitor : MonoBehaviour
             curCp.PrintAll();
             AttachCard(curCp);
         });
+
+        editBtn.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            GoToEditInterface();
+        });
+
+        abandonBtn.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            InvertEditMode(false);
+        });
+    }
+
+    private void InvertEditMode(bool state)
+    {
+         layerList[0].SetActive(!state);
+        cardContainer.SetActive(!state);
+        backBtn.SetActive(!state);
+        randBtn.SetActive(!state);
+        editBtn.SetActive(!state);
+        abandonBtn.SetActive(state);
+        clearBtn.SetActive(state);
+        saveBtn.SetActive(state); 
+        innerEditWrapper.SetActive(state);
+    }
+
+    private void GoToEditInterface()
+    {
+        InvertEditMode(true);
+       
+
     }
 
     private CardPreset CheckCurrentCp()
