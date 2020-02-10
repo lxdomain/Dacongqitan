@@ -130,7 +130,6 @@ public class CharacterMonitor : MonoBehaviour
 
         UpdateEntranceName(cmsg[0].text);
     }
-
     private void UpdateEntranceName(string modified_name)
     {
         entrance_name = modified_name;

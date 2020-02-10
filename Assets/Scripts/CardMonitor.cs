@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -32,20 +33,39 @@ public class CardMonitor : MonoBehaviour
     [SerializeField]
     private List<GameObject> presetList;
     private Dictionary<Button, CardPreset> btnToCp;
+    private List<TextMeshProUGUI> cardTypeCounter_tmps;
+    [SerializeField]
+    private List<Toggle> marionetteToggles;
+    [SerializeField]
+    private List<Toggle> drawingToggles;
+    [SerializeField]
+    private List<Toggle> goodToggles;
 
     const float HIGHLIGHT_SIZE = 24;
     const float NORMAL_SIZE = 18;
+    private int marionetteCardNumber_temp;
+    private int drawingCardNumber_temp;
+    private int goodCardNumber_temp ;
+    private CardPreset cp_temp;
+    //private bool enableToggleListener;
     private void Awake()
     {
+        //enableToggleListener = false;
         layerList = new List<GameObject>();
         btnList = new List<GameObject>();
         barList = new List<GameObject>();
         presetList = new List<GameObject>();
         cardList = new List<GameObject>();
+        marionetteToggles = new List<Toggle>();
+        drawingToggles = new List<Toggle>();
+        goodToggles = new List<Toggle>();        
+
         btnToCp = new Dictionary<Button, CardPreset>();
         cardPreview = GameObject.Find("Canvas/Background/CardContainer/CardPreview");
         innerEditWrapper = GameObject.Find("Canvas/Background/InnerEditWrapper");
         presetBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonPrep").GetComponent<Button>();
+        GameObject cardTypeCounter = GameObject.Find("Canvas/Background/InnerEditWrapper/CardTypeCounter");
+        cardTypeCounter_tmps = new List<TextMeshProUGUI>(cardTypeCounter.GetComponentsInChildren<TextMeshProUGUI>());
     }
 
     private void Start()
@@ -60,8 +80,9 @@ public class CardMonitor : MonoBehaviour
         GeneratePresetCard();
         ExtractCards();
         cardContainer.SetActive(false);
+        BuildCardScrollView();
+        BindingEvent();        
         innerEditWrapper.SetActive(false);
-        BindingEvent();
         abandonBtn.SetActive(false);
         clearBtn.SetActive(false);
         saveBtn.SetActive(false);
@@ -397,24 +418,132 @@ public class CardMonitor : MonoBehaviour
             Utilities.DisableAllCards();
             curCp.ClearAll();
             curCp.GenerateCardPresetRandomly();
-            curCp.PrintAll();
+            //curCp.PrintAll();
             AttachCard(curCp);
         });
 
         editBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
+            //enableToggleListener = true;
+            cp_temp = CheckCurrentCp();
             GoToEditInterface();
         });
 
         abandonBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
+            //enableToggleListener = false;
             InvertEditMode(false);
+            UpdateTempData(CheckCurrentCp());
         });
+
+        clearBtn.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            SetCardScrollView(false);
+        });
+
+        saveBtn.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            
+        });
+
+        foreach (Toggle tg in marionetteToggles)
+        {
+            tg.onValueChanged.AddListener((bool value) =>
+            {
+                //if (enableToggleListener)
+                //{
+                //print(tg.isOn);
+                OnToggleClick(tg, tg.isOn);
+                //CardPreset cp = new CardPreset(marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp);
+                UpdateCardTypeCounter(cp_temp);
+                //}
+            });
+        }
+
+        //foreach (Toggle tg in drawingToggles)
+        //{
+        //    tg.onValueChanged.AddListener((bool value) =>
+        //    {
+        //        if (enableToggleListener)
+        //        {
+        //            OnToggleClick(tg, value);
+        //            CardPreset cp = new CardPreset(marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp);
+        //            UpdateCardTypeCounter(cp);
+        //        }
+        //    });
+        //}
+
+        //foreach (Toggle tg in goodToggles)
+        //{
+        //    tg.onValueChanged.AddListener((bool value) =>
+        //    {
+        //        //CardPreset curCp = CheckCurrentCp();
+        //        //marionetteCardNumber_temp = curCp.MarionetteCardNumber;
+        //        //drawingCardNumber_temp = curCp.DrawingCardNumber;
+        //        //goodCardNumber_temp = curCp.GoodCardNumber;
+        //        if (enableToggleListener)
+        //        {
+        //            //print(string.Format("before changed : {0} {1} {2}", marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp));
+        //            OnToggleClick(tg, value);
+        //            //print(string.Format("after changed : {0} {1} {2}", marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp));
+        //            CardPreset cp = new CardPreset(marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp);
+        //            UpdateCardTypeCounter(cp);
+        //        }
+        //    });
+        //}
+    }
+
+    private void OnToggleClick(Toggle tg, bool isSelected)
+    {
+        string typeName = GetToggleType(tg);
+        switch (typeName)
+        {
+            case "人偶牌":
+                cp_temp.MarionetteCardNumber += (isSelected ? 1 : -1);
+                break;
+            case "图纸牌":
+                cp_temp.DrawingCardNumber += (isSelected ? 1 : -1);
+                break;
+            case "物品牌":
+                cp_temp.GoodCardNumber += (isSelected ? 1 : -1);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private string GetToggleType(Toggle tg)
+    {
+        string cardName = tg.gameObject.name;
+        cardName = cardName.Substring(0, cardName.Length - 7);
+        //print(cardName);
+        foreach (Card card in Utilities.MarionetteCardList)
+        {
+            if(card.Name == cardName)
+            {
+                return MyTool.GetEnumDescription(card.TypeName);
+            }
+        }
+        foreach (Card card in Utilities.DrawingCardList)
+        {
+            if (card.Name == cardName)
+            {
+                return MyTool.GetEnumDescription(card.TypeName);
+            }
+        }
+        foreach (Card card in Utilities.GoodCardList)
+        {
+            if (card.Name == cardName)
+            {
+                return MyTool.GetEnumDescription(card.TypeName);
+            }
+        }
+        return "";
     }
 
     private void InvertEditMode(bool state)
     {
-         layerList[0].SetActive(!state);
+        layerList[0].SetActive(!state);
         cardContainer.SetActive(!state);
         backBtn.SetActive(!state);
         randBtn.SetActive(!state);
@@ -422,14 +551,123 @@ public class CardMonitor : MonoBehaviour
         abandonBtn.SetActive(state);
         clearBtn.SetActive(state);
         saveBtn.SetActive(state); 
-        innerEditWrapper.SetActive(state);
+        innerEditWrapper.SetActive(state);        
+
+    }
+
+    private void UpdateTempData(CardPreset curCp)
+    {      
+        marionetteCardNumber_temp = curCp.MarionetteCardNumber;
+        drawingCardNumber_temp = curCp.DrawingCardNumber;
+        goodCardNumber_temp = curCp.GoodCardNumber;
     }
 
     private void GoToEditInterface()
-    {
-        InvertEditMode(true);
-       
+    {        
+        InvertEditMode(true);        
+        //CardPreset curCp = CheckCurrentCp();
+        //UpdateTempData(cp_temp);
+        UpdateCardTypeCounter(cp_temp);
+        UpdateCardScrollView(cp_temp);
+    }
 
+    private void BuildCardScrollView()
+    {
+        GameObject cardScrollView = GameObject.Find("Canvas/Background/InnerEditWrapper/CardScrollView");
+        GameObject contents = cardScrollView.GetComponentInChildren<GridLayoutGroup>().gameObject;
+        foreach (Card card in Utilities.MarionetteCardList)
+        {
+            marionetteToggles.Add(AppendCardContent(card, contents.transform));
+        }
+        foreach (Card card in Utilities.DrawingCardList)
+        {
+            drawingToggles.Add(AppendCardContent(card, contents.transform));
+        }
+        foreach (Card card in Utilities.GoodCardList)
+        {
+            goodToggles.Add(AppendCardContent(card, contents.transform));
+        }
+    }
+
+    private void SetCardScrollView(bool state)
+    {
+        foreach(Toggle tg in marionetteToggles)
+        {
+            tg.isOn = state;
+        }
+        foreach (Toggle tg in drawingToggles)
+        {
+            tg.isOn = state;
+        }
+        foreach (Toggle tg in goodToggles)
+        {
+            tg.isOn = state;
+        }
+        cardTypeCounter_tmps[1].text = "0";
+        cardTypeCounter_tmps[4].text = "0";
+        cardTypeCounter_tmps[7].text = "0";
+        foreach (TextMeshProUGUI tmp in cardTypeCounter_tmps)
+        {
+            tmp.colorGradientPreset = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Red - Single");
+        }
+    }
+
+    private void UpdateCardScrollView(CardPreset cp)
+    {
+        GameObject cardScrollView = GameObject.Find("Canvas/Background/InnerEditWrapper/CardScrollView");
+        GameObject contents = cardScrollView.GetComponentInChildren<GridLayoutGroup>().gameObject;
+        for(int i = 0; i < Utilities.MarionetteCardList.Length; i++)
+        {
+            marionetteToggles[i].isOn = cp.MarionetteCardList.Exists(t => t == Utilities.MarionetteCardList[i]);
+        }
+        for (int i = 0; i < Utilities.DrawingCardList.Length; i++)
+        {
+            drawingToggles[i].isOn = cp.DrawingCardList.Exists(t => t == Utilities.DrawingCardList[i]);
+        }
+        for (int i = 0; i < Utilities.GoodCardList.Length; i++)
+        {
+            goodToggles[i].isOn = cp.GoodCardList.Exists(t => t == Utilities.GoodCardList[i]);
+        }
+    }
+
+    private Toggle AppendCardContent(Card card,Transform parent)
+    {
+            
+            GameObject go = (GameObject)Resources.Load(Utilities.res_folder_path_prefabs + "CardContent");
+            go.name = card.Name;
+            go = Instantiate(go);
+            go.transform.SetParent(parent);
+            string pathPrefix = Utilities.res_folder_path_cards + card.Name + "_n";
+            go.GetComponentInChildren<Image>().sprite = Resources.Load(pathPrefix, typeof(Sprite)) as Sprite;
+            go.GetComponentInChildren<TextMeshProUGUI>().text = card.Description;
+
+           return go.GetComponent<Toggle>();
+    }
+
+
+    private void UpdateCardTypeCounter(CardPreset cp)
+    {
+        cp.PrintAll();
+        cardTypeCounter_tmps[1].text = cp.MarionetteCardNumber.ToString();
+        cardTypeCounter_tmps[4].text = cp.DrawingCardNumber.ToString();
+        cardTypeCounter_tmps[7].text = cp.GoodCardNumber.ToString();
+        TMP_ColorGradient _colorGradient_yellow = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Yellow - Single");
+        TMP_ColorGradient _colorGradient_red = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Red - Single");
+        for(int i = 0; i < cardTypeCounter_tmps.Count(); i++)
+        {
+            if (i <= 2)
+            {
+                cardTypeCounter_tmps[i].colorGradientPreset = cp.MarionetteCardNumber >= 8 ?  _colorGradient_yellow: _colorGradient_red;
+            }
+            else if(i <= 5)
+            {
+                cardTypeCounter_tmps[i].colorGradientPreset = cp.DrawingCardNumber >= 8 ? _colorGradient_yellow : _colorGradient_red;
+            }
+            else if(i <= 8)
+            {
+                cardTypeCounter_tmps[i].colorGradientPreset = cp.GoodCardNumber >= 8 ? _colorGradient_yellow : _colorGradient_red;
+            }
+        }
     }
 
     private CardPreset CheckCurrentCp()

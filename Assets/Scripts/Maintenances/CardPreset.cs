@@ -29,6 +29,16 @@ public class CardPreset
         DrawingCardList = new List<DrawingCard>();
         GoodCardList = new List<GoodCard>();
         RandomTag = false;
+        this.MarionetteCardNumber = 0;
+        this.DrawingCardNumber = 0;
+        this.GoodCardNumber = 0;
+    }
+
+    public CardPreset(int MarionetteCardNumber, int DrawingCardNumber, int GoodCardNumber)
+    {
+        this.MarionetteCardNumber = MarionetteCardNumber;
+        this.DrawingCardNumber = DrawingCardNumber;
+        this.GoodCardNumber = GoodCardNumber;
     }
 
     public void ClearAll()
