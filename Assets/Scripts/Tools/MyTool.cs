@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Tool class for native classes.
@@ -17,4 +18,13 @@ public class MyTool
         DescriptionAttribute descriptionAttribute = (DescriptionAttribute)objs[0];
         return descriptionAttribute.Description;
     }
+
+
+    public static string GetMemory(object o)
+    {
+        GCHandle h = GCHandle.Alloc(o, GCHandleType.Pinned);
+        IntPtr addr = h.AddrOfPinnedObject();
+        return "0x" + addr.ToString("X");
+    }
+
 }

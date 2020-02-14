@@ -43,11 +43,11 @@ public class CardMonitor : MonoBehaviour
 
     const float HIGHLIGHT_SIZE = 24;
     const float NORMAL_SIZE = 18;
+    private CardPreset cp_temp;
     private int marionetteCardNumber_temp;
     private int drawingCardNumber_temp;
-    private int goodCardNumber_temp ;
-    private CardPreset cp_temp;
-    //private bool enableToggleListener;
+    private int goodCardNumber_temp;
+    private bool disableToggleListener;
     private void Awake()
     {
         //enableToggleListener = false;
@@ -58,7 +58,7 @@ public class CardMonitor : MonoBehaviour
         cardList = new List<GameObject>();
         marionetteToggles = new List<Toggle>();
         drawingToggles = new List<Toggle>();
-        goodToggles = new List<Toggle>();        
+        goodToggles = new List<Toggle>();
 
         btnToCp = new Dictionary<Button, CardPreset>();
         cardPreview = GameObject.Find("Canvas/Background/CardContainer/CardPreview");
@@ -66,6 +66,8 @@ public class CardMonitor : MonoBehaviour
         presetBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonPrep").GetComponent<Button>();
         GameObject cardTypeCounter = GameObject.Find("Canvas/Background/InnerEditWrapper/CardTypeCounter");
         cardTypeCounter_tmps = new List<TextMeshProUGUI>(cardTypeCounter.GetComponentsInChildren<TextMeshProUGUI>());
+
+        cp_temp = new CardPreset();
     }
 
     private void Start()
@@ -376,6 +378,17 @@ public class CardMonitor : MonoBehaviour
         //tmp.colorGradientPreset = ScriptableObject.CreateInstance<TMP_ColorGradient>();
         //tmp.colorGradientPreset.colorMode = ColorMode.FourCornersGradient;
     }
+
+
+    // To avoid onValueChanged function being called when setting toggle.isOn through code.
+    public void SetIsOn(Toggle tg, bool isOn)
+    {
+        disableToggleListener = true;
+        tg.isOn = isOn;
+        disableToggleListener = false;
+
+    }
+
     private void BindingEvent()
     {
         foreach(GameObject preset in presetList)
@@ -425,87 +438,107 @@ public class CardMonitor : MonoBehaviour
         editBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
             //enableToggleListener = true;
-            cp_temp = CheckCurrentCp();
+            //cp_temp = CheckCurrentCp();
+            //print(cp_temp.MarionetteCardNumber);
             GoToEditInterface();
+            CardPreset curCp = CheckCurrentCp();
+            saveBtn.SetActive(curCp.IsLegal);
+            UpdateTempData(curCp.MarionetteCardNumber, curCp.DrawingCardNumber, curCp.GoodCardNumber);
+            UpdateCardTypeCounter();
+            UpdateCardScrollView(curCp);
         });
 
         abandonBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
             //enableToggleListener = false;
             InvertEditMode(false);
-            UpdateTempData(CheckCurrentCp());
+            //UpdateTempData(CheckCurrentCp());
         });
 
         clearBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
+            //SetCardScrollView(false);
+            //cp_temp = new CardPreset(0, 0, 0);
+            saveBtn.SetActive(false);
+            UpdateTempData(0, 0, 0);
+            UpdateCardTypeCounter();
             SetCardScrollView(false);
         });
 
         saveBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
-            
+            //if (CanBeSaved())
+            //{
+                SaveTempCardPreset();
+                CardPreset curCp = CheckCurrentCp();
+                curCp.PrintAll();
+                curCp = cp_temp;
+                curCp.PrintAll();
+                AttachCard(curCp);
+            //}
+            //else
+            //{
+            //    print(string.Format("{0} {1} {2}", marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp));
+            //}
         });
 
         foreach (Toggle tg in marionetteToggles)
         {
-            tg.onValueChanged.AddListener((bool value) =>
+            tg.onValueChanged.AddListener(isSelected=>
             {
-                //if (enableToggleListener)
-                //{
-                //print(tg.isOn);
-                OnToggleClick(tg, tg.isOn);
-                //CardPreset cp = new CardPreset(marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp);
-                UpdateCardTypeCounter(cp_temp);
-                //}
+                if (!disableToggleListener)
+                {
+                    OnToggleValueChanged(tg);
+                    //print(isSelected);
+                    UpdateCardTypeCounter();
+                    saveBtn.SetActive(CanBeSaved());
+                }
             });
         }
 
-        //foreach (Toggle tg in drawingToggles)
-        //{
-        //    tg.onValueChanged.AddListener((bool value) =>
-        //    {
-        //        if (enableToggleListener)
-        //        {
-        //            OnToggleClick(tg, value);
-        //            CardPreset cp = new CardPreset(marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp);
-        //            UpdateCardTypeCounter(cp);
-        //        }
-        //    });
-        //}
+        foreach (Toggle tg in drawingToggles)
+        {
+            tg.onValueChanged.AddListener((bool value) =>
+            {
+                if (!disableToggleListener)
+                {
+                    OnToggleValueChanged(tg);
+                    //print(isSelected);
+                    UpdateCardTypeCounter();
+                    saveBtn.SetActive(CanBeSaved());
+                }
+            });
+        }
 
-        //foreach (Toggle tg in goodToggles)
-        //{
-        //    tg.onValueChanged.AddListener((bool value) =>
-        //    {
-        //        //CardPreset curCp = CheckCurrentCp();
-        //        //marionetteCardNumber_temp = curCp.MarionetteCardNumber;
-        //        //drawingCardNumber_temp = curCp.DrawingCardNumber;
-        //        //goodCardNumber_temp = curCp.GoodCardNumber;
-        //        if (enableToggleListener)
-        //        {
-        //            //print(string.Format("before changed : {0} {1} {2}", marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp));
-        //            OnToggleClick(tg, value);
-        //            //print(string.Format("after changed : {0} {1} {2}", marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp));
-        //            CardPreset cp = new CardPreset(marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp);
-        //            UpdateCardTypeCounter(cp);
-        //        }
-        //    });
-        //}
+        foreach (Toggle tg in goodToggles)
+        {
+            tg.onValueChanged.AddListener((bool value) =>
+            {
+                if (!disableToggleListener)
+                {
+                    OnToggleValueChanged(tg);
+                    //print(isSelected);
+                    UpdateCardTypeCounter();
+                    saveBtn.SetActive(CanBeSaved());
+                }
+            });
+        }
     }
 
-    private void OnToggleClick(Toggle tg, bool isSelected)
+    private void OnToggleValueChanged(Toggle tg)
     {
         string typeName = GetToggleType(tg);
+        bool isSelected = tg.isOn;
         switch (typeName)
         {
             case "人偶牌":
-                cp_temp.MarionetteCardNumber += (isSelected ? 1 : -1);
+                marionetteCardNumber_temp += (isSelected ? 1 : -1);
                 break;
             case "图纸牌":
-                cp_temp.DrawingCardNumber += (isSelected ? 1 : -1);
+                drawingCardNumber_temp += (isSelected ? 1 : -1);
                 break;
             case "物品牌":
-                cp_temp.GoodCardNumber += (isSelected ? 1 : -1);
+                goodCardNumber_temp += (isSelected ? 1 : -1);
                 break;
             default:
                 break;
@@ -541,6 +574,46 @@ public class CardMonitor : MonoBehaviour
         return "";
     }
 
+    private void SaveTempCardPreset()
+    {
+        cp_temp.ClearAll();
+        cp_temp.MarionetteCardNumber = marionetteCardNumber_temp;
+        cp_temp.DrawingCardNumber = drawingCardNumber_temp;
+        cp_temp.GoodCardNumber = goodCardNumber_temp;
+        cp_temp.TotalNumber = marionetteCardNumber_temp + drawingCardNumber_temp + goodCardNumber_temp;
+        cp_temp.CheckIsLegalOrNot();
+        for (int i = 0; i < Utilities.MARIONETTE_CARD_NUM; i++)
+        {
+            if (marionetteToggles[i].isOn)
+            {
+                cp_temp.MarionetteCardList.Add(Utilities.MarionetteCardList[i]);
+            }
+        }
+        for (int i = 0; i < Utilities.DRAWING_CARD_NUM; i++)
+        {
+            if (drawingToggles[i].isOn)
+            {
+                cp_temp.DrawingCardList.Add(Utilities.DrawingCardList[i]);
+            }
+        }
+        for (int i = 0; i < Utilities.GOOD_CARD_NUM; i++)
+        {
+            if (goodToggles[i].isOn)
+            {
+                cp_temp.GoodCardList.Add(Utilities.GoodCardList[i]);
+            }
+        }
+        //if (cp_temp.IsLegal)
+        //{
+        //    cp_temp.PrintAll();
+        //}
+        //else
+        //{
+        //    print(string.Format("{0} {1} {2} is illegal", marionetteCardNumber_temp, drawingCardNumber_temp, goodCardNumber_temp));
+        //}
+        
+    }
+
     private void InvertEditMode(bool state)
     {
         layerList[0].SetActive(!state);
@@ -555,20 +628,19 @@ public class CardMonitor : MonoBehaviour
 
     }
 
-    private void UpdateTempData(CardPreset curCp)
-    {      
-        marionetteCardNumber_temp = curCp.MarionetteCardNumber;
-        drawingCardNumber_temp = curCp.DrawingCardNumber;
-        goodCardNumber_temp = curCp.GoodCardNumber;
+    private void UpdateTempData(int mcn, int dcn, int gcn)
+    {
+        marionetteCardNumber_temp = mcn;
+        drawingCardNumber_temp = dcn;
+        goodCardNumber_temp = gcn;
     }
 
     private void GoToEditInterface()
     {        
-        InvertEditMode(true);        
+        InvertEditMode(true);
         //CardPreset curCp = CheckCurrentCp();
         //UpdateTempData(cp_temp);
-        UpdateCardTypeCounter(cp_temp);
-        UpdateCardScrollView(cp_temp);
+        //print(cp_temp.MarionetteCardNumber);
     }
 
     private void BuildCardScrollView()
@@ -593,23 +665,23 @@ public class CardMonitor : MonoBehaviour
     {
         foreach(Toggle tg in marionetteToggles)
         {
-            tg.isOn = state;
+            SetIsOn(tg, state);
         }
         foreach (Toggle tg in drawingToggles)
         {
-            tg.isOn = state;
+            SetIsOn(tg, state);
         }
         foreach (Toggle tg in goodToggles)
         {
-            tg.isOn = state;
+            SetIsOn(tg, state);
         }
-        cardTypeCounter_tmps[1].text = "0";
-        cardTypeCounter_tmps[4].text = "0";
-        cardTypeCounter_tmps[7].text = "0";
-        foreach (TextMeshProUGUI tmp in cardTypeCounter_tmps)
-        {
-            tmp.colorGradientPreset = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Red - Single");
-        }
+        //cardTypeCounter_tmps[1].text = "0";
+        //cardTypeCounter_tmps[4].text = "0";
+        //cardTypeCounter_tmps[7].text = "0";
+        //foreach (TextMeshProUGUI tmp in cardTypeCounter_tmps)
+        //{
+        //    tmp.colorGradientPreset = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Red - Single");
+        //}
     }
 
     private void UpdateCardScrollView(CardPreset cp)
@@ -618,15 +690,18 @@ public class CardMonitor : MonoBehaviour
         GameObject contents = cardScrollView.GetComponentInChildren<GridLayoutGroup>().gameObject;
         for(int i = 0; i < Utilities.MarionetteCardList.Length; i++)
         {
-            marionetteToggles[i].isOn = cp.MarionetteCardList.Exists(t => t == Utilities.MarionetteCardList[i]);
+            bool state = cp.MarionetteCardList.Exists(t => t == Utilities.MarionetteCardList[i]);
+            SetIsOn(marionetteToggles[i], state);
         }
         for (int i = 0; i < Utilities.DrawingCardList.Length; i++)
         {
-            drawingToggles[i].isOn = cp.DrawingCardList.Exists(t => t == Utilities.DrawingCardList[i]);
+            bool state = cp.DrawingCardList.Exists(t => t == Utilities.DrawingCardList[i]);
+            SetIsOn(drawingToggles[i], state);
         }
         for (int i = 0; i < Utilities.GoodCardList.Length; i++)
         {
-            goodToggles[i].isOn = cp.GoodCardList.Exists(t => t == Utilities.GoodCardList[i]);
+            bool state = cp.GoodCardList.Exists(t => t == Utilities.GoodCardList[i]);
+            SetIsOn(goodToggles[i], state);
         }
     }
 
@@ -645,29 +720,43 @@ public class CardMonitor : MonoBehaviour
     }
 
 
-    private void UpdateCardTypeCounter(CardPreset cp)
+    private void UpdateCardTypeCounter()
     {
-        cp.PrintAll();
-        cardTypeCounter_tmps[1].text = cp.MarionetteCardNumber.ToString();
-        cardTypeCounter_tmps[4].text = cp.DrawingCardNumber.ToString();
-        cardTypeCounter_tmps[7].text = cp.GoodCardNumber.ToString();
+        //cp.PrintAll();
+        cardTypeCounter_tmps[1].text = marionetteCardNumber_temp.ToString();
+        //print(cardTypeCounter_tmps[1].text);
+        cardTypeCounter_tmps[4].text = drawingCardNumber_temp.ToString();
+        cardTypeCounter_tmps[7].text = goodCardNumber_temp.ToString();
         TMP_ColorGradient _colorGradient_yellow = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Yellow - Single");
         TMP_ColorGradient _colorGradient_red = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Red - Single");
         for(int i = 0; i < cardTypeCounter_tmps.Count(); i++)
         {
             if (i <= 2)
             {
-                cardTypeCounter_tmps[i].colorGradientPreset = cp.MarionetteCardNumber >= 8 ?  _colorGradient_yellow: _colorGradient_red;
+                cardTypeCounter_tmps[i].colorGradientPreset = marionetteCardNumber_temp >= 8 ?  _colorGradient_yellow: _colorGradient_red;
             }
             else if(i <= 5)
             {
-                cardTypeCounter_tmps[i].colorGradientPreset = cp.DrawingCardNumber >= 8 ? _colorGradient_yellow : _colorGradient_red;
+                cardTypeCounter_tmps[i].colorGradientPreset = drawingCardNumber_temp >= 8 ? _colorGradient_yellow : _colorGradient_red;
             }
             else if(i <= 8)
             {
-                cardTypeCounter_tmps[i].colorGradientPreset = cp.GoodCardNumber >= 8 ? _colorGradient_yellow : _colorGradient_red;
+                cardTypeCounter_tmps[i].colorGradientPreset = goodCardNumber_temp >= 8 ? _colorGradient_yellow : _colorGradient_red;
             }
         }
+    }
+
+    private bool CanBeSaved()
+    {
+        TMP_ColorGradient _colorGradient_red = Resources.Load<TMP_ColorGradient>(Utilities.res_folder_path_tmp + "ColorGradient/Red - Single");
+        foreach (var tmp in cardTypeCounter_tmps)
+        {
+            if(tmp.colorGradientPreset == _colorGradient_red)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private CardPreset CheckCurrentCp()

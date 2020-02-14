@@ -16,6 +16,7 @@ public class CardPreset
     public List<DrawingCard> DrawingCardList { get; }
     public List<GoodCard> GoodCardList { get; }
     public bool RandomTag { get; set; }
+    public bool IsLegal { get; set; }
     #endregion
 
     const int MIN_EACH_NUM = 8;
@@ -29,6 +30,7 @@ public class CardPreset
         DrawingCardList = new List<DrawingCard>();
         GoodCardList = new List<GoodCard>();
         RandomTag = false;
+        IsLegal = false;
         this.MarionetteCardNumber = 0;
         this.DrawingCardNumber = 0;
         this.GoodCardNumber = 0;
@@ -39,6 +41,18 @@ public class CardPreset
         this.MarionetteCardNumber = MarionetteCardNumber;
         this.DrawingCardNumber = DrawingCardNumber;
         this.GoodCardNumber = GoodCardNumber;
+    }
+
+    public void CheckIsLegalOrNot()
+    {
+        if(MarionetteCardNumber >= MIN_EACH_NUM && DrawingCardNumber >= MIN_EACH_NUM && GoodCardNumber >= GoodCardNumber)
+        {
+            IsLegal = true;
+        }
+        else
+        {
+            IsLegal = false;
+        }
     }
 
     public void ClearAll()
@@ -54,6 +68,7 @@ public class CardPreset
         GenerateCardNumberRandomly();
         GenerateCardListRandomly();
         RandomTag = true;
+        IsLegal = true;
     }
 
     private void GenerateCardNumberRandomly()
