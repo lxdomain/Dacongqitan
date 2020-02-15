@@ -40,6 +40,8 @@ public class CardMonitor : MonoBehaviour
     private List<Toggle> drawingToggles;
     [SerializeField]
     private List<Toggle> goodToggles;
+    [SerializeField]
+    private List<Toggle> displayToggles;
 
     const float HIGHLIGHT_SIZE = 24;
     const float NORMAL_SIZE = 18;
@@ -66,6 +68,8 @@ public class CardMonitor : MonoBehaviour
         presetBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonPrep").GetComponent<Button>();
         GameObject cardTypeCounter = GameObject.Find("Canvas/Background/InnerEditWrapper/CardTypeCounter");
         cardTypeCounter_tmps = new List<TextMeshProUGUI>(cardTypeCounter.GetComponentsInChildren<TextMeshProUGUI>());
+        GameObject cardTypeToggles = GameObject.Find("Canvas/Background/InnerEditWrapper/CardTypeToggles");
+        displayToggles = new List<Toggle>(cardTypeToggles.GetComponentsInChildren<Toggle>());
 
         cp_temp = new CardPreset();
     }
@@ -396,6 +400,7 @@ public class CardMonitor : MonoBehaviour
             var btn = preset.GetComponent<Button>();
             btn.onClick.AddListener(() =>
             {
+                cardPreview.SetActive(false);
                 ChangeFontSizeAndColor(btn);
                 AttachCard(btnToCp[btn], !btnToCp[btn].RandomTag);
             });
@@ -451,6 +456,7 @@ public class CardMonitor : MonoBehaviour
         abandonBtn.GetComponent<Button>().onClick.AddListener(() =>
         {
             //enableToggleListener = false;
+            cardPreview.SetActive(false);
             InvertEditMode(false);
             //UpdateTempData(CheckCurrentCp());
         });
@@ -471,9 +477,9 @@ public class CardMonitor : MonoBehaviour
             //{
                 SaveTempCardPreset();
                 CardPreset curCp = CheckCurrentCp();
-                curCp.PrintAll();
+                //curCp.PrintAll();
                 curCp = cp_temp;
-                curCp.PrintAll();
+                //curCp.PrintAll();
                 AttachCard(curCp);
             //}
             //else
@@ -523,6 +529,30 @@ public class CardMonitor : MonoBehaviour
                 }
             });
         }
+
+        displayToggles[0].onValueChanged.AddListener((bool value) =>
+        {
+                for(int i = 0; i < marionetteToggles.Count(); i++)
+                {
+                    marionetteToggles[i].gameObject.SetActive(displayToggles[0].isOn);
+                }
+        });
+
+        displayToggles[1].onValueChanged.AddListener((bool value) =>
+        {
+            for (int i = 0; i < drawingToggles.Count(); i++)
+            {
+                drawingToggles[i].gameObject.SetActive(displayToggles[1].isOn);
+            }
+        });
+
+        displayToggles[2].onValueChanged.AddListener((bool value) =>
+        {
+            for (int i = 0; i < goodToggles.Count(); i++)
+            {
+                goodToggles[i].gameObject.SetActive(displayToggles[2].isOn);
+            }
+        });
     }
 
     private void OnToggleValueChanged(Toggle tg)

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// This class is used to save configurations for each player.
@@ -49,13 +52,13 @@ public class PlayerConfiguration
 
     public enum PresetCardsOptions
     {
-        [Description("预设牌组1")]
+        [Description("预设卡组1")]
         ONE,
-        [Description("预设牌组2")]
+        [Description("预设卡组2")]
         TWO,
-        [Description("预设牌组3")]
+        [Description("预设卡组3")]
         THREE,
-        [Description("预设牌组4")]
+        [Description("预设卡组4")]
         FOUR
     }
 
@@ -66,12 +69,62 @@ public class PlayerConfiguration
     public PresetCardsOptions PresetCards { get; set; }
     #endregion
 
+    private static Dictionary<string, AbstractNameOptions> strToAbstractName;
+    private static Dictionary<string, ModeOptions> strToMode;
+    private static Dictionary<string, NameOptions> strToName;
+    private static Dictionary<string, PresetCardsOptions> strToPresetCards;
+
     public PlayerConfiguration(AbstractNameOptions AbstractName, ModeOptions Mode, NameOptions Name, PresetCardsOptions PresetCards)
     {
         this.AbstractName = AbstractName;
         this.Mode = Mode;
         this.Name = Name;
         this.PresetCards = PresetCards;
+    }
+
+    public static void MakeDict()
+    {
+        strToAbstractName = new Dictionary<string, AbstractNameOptions>
+        {
+            { "玩家甲",AbstractNameOptions.JIA },
+            { "玩家乙",AbstractNameOptions.YI },
+            { "玩家丙",AbstractNameOptions.BING },
+            { "玩家丁",AbstractNameOptions.DING }
+        };
+
+        strToMode = new Dictionary<string, ModeOptions>
+        {
+             { "电脑",ModeOptions.AUTO },
+             { "手动",ModeOptions.MANUAL }
+        };
+
+        strToName = new Dictionary<string, NameOptions>
+        {
+            { "原天柿",NameOptions.YTS },
+            { "囡囡",NameOptions.NN },
+            { "外公",NameOptions.WG },
+            { "二大爷",NameOptions.EDY },
+            { "七舅",NameOptions.QJ },
+            { "花栗子",NameOptions.HLZ },
+            { "冬白",NameOptions.DB },
+            { "闪电",NameOptions.SD }
+        };
+
+        strToPresetCards = new Dictionary<string, PresetCardsOptions>
+        {
+             { "预设卡组1",PresetCardsOptions.ONE },
+             { "预设卡组2",PresetCardsOptions.TWO },
+             { "预设卡组3",PresetCardsOptions.THREE },
+             { "预设卡组4",PresetCardsOptions.FOUR }
+        };
+    }
+
+    public PlayerConfiguration(string[] msg)
+    {
+        AbstractName = strToAbstractName[msg[0]];
+        Mode = strToMode[msg[1]];
+        Name = strToName[msg[2]];
+        PresetCards = strToPresetCards[msg[3]];
     }
 
     public void PrintAll()

@@ -14,9 +14,12 @@ public class PanelToggle : MonoBehaviour
     private List<List<Button>> itemsMgrList;
     [SerializeField]
     private List<GameObject> panelList;
-    
+
     private GameObject playerContainer;
     private Button backBtn;
+
+    private GameObject player03;
+    private GameObject player04;
 
     private void Awake()
     {
@@ -26,6 +29,7 @@ public class PanelToggle : MonoBehaviour
         itemsMgrList = new List<List<Button>>();
 
         panelList = new List<GameObject>();
+
 
         GameObject[] panelGroup = GameObject.FindGameObjectsWithTag("SubItem");
         for (int i = 0; i < panelGroup.Length; i++)
@@ -40,6 +44,9 @@ public class PanelToggle : MonoBehaviour
 
         playerContainer = GameObject.Find("Canvas/Background/RightCenterPanel/PlayerContainer");
         backBtn = GameObject.Find("Canvas/Background/BottomMask/BottomPanel/ButtonBack").GetComponent<Button>();
+
+        player03 = GameObject.Find("Canvas/Background/RightCenterPanel/PlayerContainer/Player_03");
+        player04 = GameObject.Find("Canvas/Background/RightCenterPanel/PlayerContainer/Player_04");
     }
 
     private void Start()
@@ -51,10 +58,15 @@ public class PanelToggle : MonoBehaviour
         for(int i = 0; i < itemsMgrList.Count(); i++)
         {
             // Avoid closure trap.
-            int index = i;
-             foreach(Button item in itemsMgrList[i])
+            int temp_i = i;
+             for(int j = 0 ;  j < itemsMgrList[i].Count(); j++)
              {
-                        item.onClick.AddListener(() => ToggleInnerText(item, index));
+                    int temp_j = j;
+                    itemsMgrList[temp_i][temp_j].onClick.AddListener(() =>
+                    {
+                        ToggleInnerText(itemsMgrList[temp_i][temp_j], temp_i);
+
+                    });
              }
         }
         backBtn.onClick.AddListener(() =>
@@ -101,8 +113,31 @@ public class PanelToggle : MonoBehaviour
         //print(itemText.text.ToString());
         Text innerText = barBtnList[index].transform.Find("DynamicText").GetComponent<Text>();
         innerText.text = itemText.text.ToString();
+        
+        // Special judgement.
+        if(index == 0)
+        {
+            string text = innerText.text;
+            switch(text)
+            {
+                case "2人":
+                    player03.SetActive(false);
+                    player04.SetActive(false);
+                    break;
+                case "3人":
+                    player03.SetActive(true);
+                    player04.SetActive(false);
+                    break;
+                default:
+                    player03.SetActive(true);
+                    player04.SetActive(true);
+                    break;
+            }
+            
+        }
 
-        if(index == 2)
+        // Special judgement.
+        if (index == 2)
         {
             innerText.text = itemText.text.ToString().Substring(0, 4);
         }
