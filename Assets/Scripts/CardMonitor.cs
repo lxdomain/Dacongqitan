@@ -50,6 +50,7 @@ public class CardMonitor : MonoBehaviour
     private int drawingCardNumber_temp;
     private int goodCardNumber_temp;
     private bool disableToggleListener;
+    private bool alreadyDisabled;
     private void Awake()
     {
         //enableToggleListener = false;
@@ -393,6 +394,55 @@ public class CardMonitor : MonoBehaviour
 
     }
 
+    public bool CardsOverflow()
+    {
+        int t = marionetteCardNumber_temp + drawingCardNumber_temp + goodCardNumber_temp;
+        return t >= 32;
+    }
+
+    public void DisableAllCardToggles()
+    {
+        foreach(var tg in marionetteToggles)
+        {
+                tg.interactable = tg.isOn;
+        }
+        foreach (var tg in drawingToggles)
+        {
+            tg.interactable = tg.isOn;
+        }
+        foreach (var tg in goodToggles)
+        {
+            tg.interactable = tg.isOn;
+        }
+        alreadyDisabled = true;
+    }
+
+    public void EnableAllCardToggles()
+    {
+        foreach(var tg in marionetteToggles)
+        {
+            if(!tg.interactable)
+            {
+                tg.interactable = true;
+            }
+        }
+        foreach (var tg in drawingToggles)
+        {
+            if (!tg.interactable)
+            {
+                tg.interactable = true;
+            }
+        }
+        foreach (var tg in goodToggles)
+        {
+            if (!tg.interactable)
+            {
+                tg.interactable = true;
+            }
+        }
+        alreadyDisabled = false;
+    }
+
     private void BindingEvent()
     {
         foreach(GameObject preset in presetList)
@@ -451,6 +501,12 @@ public class CardMonitor : MonoBehaviour
             UpdateTempData(curCp.MarionetteCardNumber, curCp.DrawingCardNumber, curCp.GoodCardNumber);
             UpdateCardTypeCounter();
             UpdateCardScrollView(curCp);
+
+            if (CardsOverflow())
+            {
+                DisableAllCardToggles();
+                saveBtn.SetActive(false);
+            }
         });
 
         abandonBtn.GetComponent<Button>().onClick.AddListener(() =>
@@ -495,9 +551,37 @@ public class CardMonitor : MonoBehaviour
                 if (!disableToggleListener)
                 {
                     OnToggleValueChanged(tg);
-                    //print(isSelected);
                     UpdateCardTypeCounter();
-                    saveBtn.SetActive(CanBeSaved());
+                }
+                if (!CardsOverflow())
+                {
+                    EnableAllCardToggles();
+                    //if (!disableToggleListener)
+                    //{
+                    //    OnToggleValueChanged(tg);
+                        //print(isSelected);
+                        //UpdateCardTypeCounter();
+                        saveBtn.SetActive(CanBeSaved());
+                    //}
+                }
+                else
+                {
+                    if (!alreadyDisabled)
+                    {
+                        DisableAllCardToggles();
+                        saveBtn.SetActive(false);
+                    }
+                    else
+                    {
+                        EnableAllCardToggles();
+                        if (!disableToggleListener)
+                        {
+                            OnToggleValueChanged(tg);
+                            //print(isSelected);
+                            UpdateCardTypeCounter();
+                            saveBtn.SetActive(CanBeSaved());
+                        }
+                    }
                 }
             });
         }
@@ -509,9 +593,37 @@ public class CardMonitor : MonoBehaviour
                 if (!disableToggleListener)
                 {
                     OnToggleValueChanged(tg);
-                    //print(isSelected);
                     UpdateCardTypeCounter();
-                    saveBtn.SetActive(CanBeSaved());
+                }
+                if (!CardsOverflow())
+                {
+                    EnableAllCardToggles();
+                    //if (!disableToggleListener)
+                    //{
+                    //    OnToggleValueChanged(tg);
+                        //print(isSelected);
+                        //UpdateCardTypeCounter();
+                        saveBtn.SetActive(CanBeSaved());
+                    //}
+                }
+                else
+                {
+                    if (!alreadyDisabled)
+                    {
+                        DisableAllCardToggles();
+                        saveBtn.SetActive(false);
+                    }
+                    else
+                    {
+                        EnableAllCardToggles();
+                        if (!disableToggleListener)
+                        {
+                            OnToggleValueChanged(tg);
+                            //print(isSelected);
+                            UpdateCardTypeCounter();
+                            saveBtn.SetActive(CanBeSaved());
+                        }
+                    }
                 }
             });
         }
@@ -523,9 +635,37 @@ public class CardMonitor : MonoBehaviour
                 if (!disableToggleListener)
                 {
                     OnToggleValueChanged(tg);
-                    //print(isSelected);
                     UpdateCardTypeCounter();
-                    saveBtn.SetActive(CanBeSaved());
+                }
+                if (!CardsOverflow())
+                {
+                    EnableAllCardToggles();
+                    //if (!disableToggleListener)
+                    //{
+                    //    OnToggleValueChanged(tg);
+                        //print(isSelected);
+                        //UpdateCardTypeCounter();
+                        saveBtn.SetActive(CanBeSaved());
+                    //}
+                }
+                else
+                {
+                    if (!alreadyDisabled)
+                    {
+                        DisableAllCardToggles();
+                        saveBtn.SetActive(false);
+                    }
+                    else
+                    {
+                        EnableAllCardToggles();
+                        if (!disableToggleListener)
+                        {
+                            OnToggleValueChanged(tg);
+                            //print(isSelected);
+                            UpdateCardTypeCounter();
+                            saveBtn.SetActive(CanBeSaved());
+                        }
+                    }
                 }
             });
         }
