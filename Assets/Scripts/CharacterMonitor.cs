@@ -16,6 +16,7 @@ public class CharacterMonitor : MonoBehaviour
     private Button[] playerbtns;
     [SerializeField]
     private GameObject[] playermsgs;
+    private int player_number;
     private int entrance_id;
     private string entrance_name;
     [SerializeField]
@@ -37,6 +38,7 @@ public class CharacterMonitor : MonoBehaviour
         charbtns = new Button[8];
         //backBtn = GameObject.Find("Canvas/Background/TopMask").GetComponentInChildren<Button>();
         //backBtn.gameObject.SetActive(false);
+        player_number = 4;
     }
 
     private void Start()
@@ -84,10 +86,11 @@ public class CharacterMonitor : MonoBehaviour
     private void CheckCharacter()
     {
         int num = -1;
-        foreach(GameObject pmsg in playermsgs)
+        //foreach(GameObject pmsg in playermsgs)
+        for(int j = 0; j < player_number; j++)
         {
             num++;
-            string name = pmsg.GetComponentInChildren<Text>().text;
+            string name = playermsgs[j].GetComponentInChildren<Text>().text;
             for(int i = 0; i < charbtns.Length; i++)
             {
                 // cimg[0] -> Button cimg[1] -> Image
@@ -159,17 +162,45 @@ public class CharacterMonitor : MonoBehaviour
         }
     }
 
-    private void BindingEvent()
+    private int CheckPlayerNumber()
     {
-        for(int i = 0; i < playerbtns.Length; i++)
+        string pnStr = GameObject.Find("Canvas/Background/LeftCenterPanel/Button_01/DynamicText").GetComponent<Text>().text.ToString();
+        switch (pnStr)
         {
-            int index = i;
-            playerbtns[index].onClick.AddListener(() =>
-            {
-                //entrance_name = btn.GetComponentInParent<GameObject>().GetComponentInChildren<Text>().text;
-                CheckEntrance(index);
-                CheckCharacter();
-            });
+            case "4人":
+                return 4;
+            case "3人":
+                return 3;
+            case "2人":
+                return 2;
+            default:
+                break;
+        }
+        return 4;
+    }
+
+    private void ResetCharBtns()
+    {
+        for(int i = 0; i < charbtns.Length; i++)
+        //foreach(Button btn in charbtns)
+        {
+            charbtns[i].onClick.RemoveAllListeners();
+            //if(player_number == 4 && charbtns[i].GetComponentsInChildren<Text>()[1].color == playercolors[4])
+            //{
+            //    ExtinctSingleCharacterByIndex(i);
+            //}
+        }
+
+
+        if(player_number == 3)
+        {
+            ExtinctSingleCharacterByIndex(3);
+        }
+
+        if (player_number == 2)
+        {
+            ExtinctSingleCharacterByIndex(3);
+            ExtinctSingleCharacterByIndex(2);
         }
 
         for (int i = 0; i < charbtns.Length; i++)
@@ -185,6 +216,25 @@ public class CharacterMonitor : MonoBehaviour
                 Utilities.entranceName = entrance_name;
             });
         }
+    }
+
+    private void BindingEvent()
+    {
+        for(int i = 0; i < playerbtns.Length; i++)
+        {
+            int index = i;
+            playerbtns[index].onClick.AddListener(() =>
+            {
+                //entrance_name = btn.GetComponentInParent<GameObject>().GetComponentInChildren<Text>().text;
+ 
+                player_number = CheckPlayerNumber();               
+                ResetCharBtns();
+                CheckEntrance(index);
+                CheckCharacter();
+            });
+        }
+
+
 
         //backBtn.onClick.AddListener(() =>
         //{

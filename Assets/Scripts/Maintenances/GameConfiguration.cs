@@ -59,6 +59,8 @@ public class GameConfiguration
     public List<PlayerConfiguration> PlayerList { get; set; }
     #endregion
 
+    private Dictionary<PlayerNumberOptions, int> pnoToInt;
+
     public GameConfiguration()
     {
         this.PlayerNumber = PlayerNumberOptions.FOUR;
@@ -92,6 +94,13 @@ public class GameConfiguration
             PlayerConfiguration.PresetCardsOptions.ONE
             ),
         };
+
+        pnoToInt = new Dictionary<PlayerNumberOptions, int>
+        {
+            { PlayerNumberOptions.FOUR,4},
+            {PlayerNumberOptions.THREE,3 },
+            {PlayerNumberOptions.TWO,2 }
+        };
     }
 
     public void PrintAll()
@@ -105,9 +114,10 @@ public class GameConfiguration
         {
             Debug.Log(info);
         }
-        foreach(PlayerConfiguration pc in PlayerList)
+        for(int i = 0; i < pnoToInt[PlayerNumber]; i++)
+        //foreach(PlayerConfiguration pc in PlayerList)
         {
-            pc.PrintAll();
+            PlayerList[i].PrintAll();
         }
     }
 }
