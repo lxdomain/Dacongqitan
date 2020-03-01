@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -111,7 +112,8 @@ public class StartGame : MonoBehaviour
                 }
                 Utilities.gc.PlayerList[i] = new PlayerConfiguration(playerStrs[i]);
             }
-            Utilities.gc.PrintAll();
+            //Utilities.gc.PrintAll();
+            SceneManager.LoadScene("MainScene");
         });
     }
 }
