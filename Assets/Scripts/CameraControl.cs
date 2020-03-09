@@ -11,6 +11,8 @@ public class CameraControl : MonoBehaviour
 
     Vector3 preV3;
 
+//    Transform camTf;
+
     float x = 0.0f;
     float y = 0.0f;
 
@@ -19,6 +21,10 @@ public class CameraControl : MonoBehaviour
     readonly float ySpeed = 120.0f;
     readonly float Speed = 40.0f;
 
+    private readonly int mouseWheelSensitivity = 15;
+    private readonly int maxCamFov = 90;
+    private readonly int minCamFov = 10;
+
     void Start()
     {
         Vector3 angles = transform.eulerAngles;
@@ -26,12 +32,46 @@ public class CameraControl : MonoBehaviour
         y = angles.x;
 
         target = new Vector3(0, 0, 0);
+
+//        camTf = Camera.main.transform;
+    }
+
+    private void Update()
+    {
+/*     if (Input.GetMouseButtonDown(0))
+        {
+            // Use Ray to detect the collider around the mouse. 
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.transform.parent.name == "Plane")
+                {
+                    //print(hit.transform.name);
+                    Vector3 relativePos = hit.transform.position - camTf.position;
+                    //print(relativePos.ToString());
+                    //	Creates a rotation with the specified forward and upwards directions.
+                    Quaternion rotation = Quaternion.LookRotation(relativePos);
+                    camTf.rotation = rotation;
+                }
+            }
+
+        }
+*/
+        //	Scale main camera FOV when roll the Mouse ScrollWheel.
+        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+        {
+            float fov = Camera.main.fieldOfView;
+            fov += Input.GetAxis("Mouse ScrollWheel") * (-mouseWheelSensitivity);
+            //Use Matf.Clamp to ensure that the movement of an axis does not exceed a certain range (minCamFov,maxCamFov).
+            fov = Mathf.Clamp(fov, minCamFov, maxCamFov);
+            Camera.main.fieldOfView = fov;
+        }
     }
 
     void LateUpdate()
     {
-        // Rotate CameraFOV when press and drag left mouse button.(per frame)
-        if (Input.GetMouseButton(0))
+        // Rotate CameraFOV when press and drag right mouse button.(per frame)
+        if (Input.GetMouseButton(1))
         {
             x += Input.GetAxis("Mouse X") * xSpeed * 0.02f;
             y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
@@ -42,8 +82,8 @@ public class CameraControl : MonoBehaviour
             transform.rotation = rotation;            
             transform.position = position;
         }
-        // Move CameraFOV when press and drag right mouse button.(per frame)
-        else if (Input.GetMouseButton(1))
+        // Move CameraFOV when press and drag left mouse button.(per frame)
+        else if (Input.GetMouseButton(0))
         {
             float x = Input.GetAxis("Mouse X");
             float y = Input.GetAxis("Mouse Y");
@@ -51,11 +91,11 @@ public class CameraControl : MonoBehaviour
         }
 
         // Record previous v3 for the first time.  
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(0))
         {
             preV3 = transform.position;
         }
-        if (Input.GetMouseButtonUp(1))
+        if (Input.GetMouseButtonUp(0))
         {        
             // Use Ray to detect the collider in the center of the screen. 
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
